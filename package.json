@@ -1,0 +1,12 @@
+{
+  "name": "creator-stock-exchange",
+  "private": true,
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
