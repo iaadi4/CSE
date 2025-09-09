@@ -192,23 +192,43 @@ impl Orderbook {
         }
     }
 
+    pub fn get_open_orders(&self, user_id: String) -> Vec<Order> {
+        self.asks
+            .values()
+            .chain(self.bids.values())
+            .flat_map(|orders| orders.iter())
+            .filter(|order| order.user_id == user_id)
+            .cloned()
+            .collect()
+    }
+
     pub fn cancel_order(&mut self, cancel_order: &CancelOrder) -> Result<Order, ()> {
-        let cancel = |orders_map: &mut BTreeMap<Decimal, Vec<Order>>| {
+        let cancel = |order_map: &mut BTreeMap<Decimal, Vec<Order>>| {
             if let Some(orders) = order_map.get_mut(&cancel_order.price) {
                 if let Some(index) = orders.iter().position(|order| order.order_id == cancel_order.order_id) {
                     let removed_order = orders.remove(index);
-                    ok(removed_order)
+                    Ok(removed_order)
                 } else {
                     Err(())
                 }
             } else {
                 Err(())
             }
-        }
+        };
 
         match cancel_order.order_side {
             OrderSide::BUY => cancel(&mut self.bids),
             OrderSide::SELL => cancel(&mut self.asks)
         }
+    }
+
+    pub fn cancel_all_orders(&mut self, user_id: String) {
+        self.bids.values_mut().for_each(|orders| {
+            orders.retain(|order| order.user_id != user_id);
+        });
+
+        self.asks.values_mut().for_each(|orders| {
+            orders.retain(|order| order.user_id != user_id);
+        });
     }
 }
