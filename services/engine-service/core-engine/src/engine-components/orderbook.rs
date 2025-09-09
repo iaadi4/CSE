@@ -45,14 +45,30 @@ impl Orderbook {
         match order.order_side {
             OrderSide::BUY => {
                 order_result = self.match_asks(&order);
+                if order_result.executed_quantity < order.quantity {
+                    order.filled_quantity = order_result.executed_quantity;
+                    self.bids
+                        .entry(order.price)
+                        .and_modify(|orders| orders.push(order.clone()))
+                        .or_insert(vec![order.clone()]);
+                }
+                order_result
             },
             OrderSide::SELL => {
                 order_result = self.match_bids(&order);
+                if order_result.executed_quantity < order.quantity {
+                    order.filled_quantity = order_result.executed_quantity;
+                    self.asks
+                        .entry(order.price)
+                        .and_modify(|orders| orders.push(order.clone()))
+                        .or_insert(vec![order.clone()])
+                }
+                order_result
             }
         }
     }
 
-    pub fn match_asks(&mut self, order: Order) -> ProcessedOrderResult {
+    pub fn match_asks(&mut self, order: &Order) -> ProcessedOrderResult {
         let mut fills: Vec<Fill> = Vec::new();
         let mut executed_quantity: Decimal = dec!(0);
         let mut empty_prices = Vec::new();
@@ -115,7 +131,7 @@ impl Orderbook {
         }
     }
 
-    pub fn match_bids(&mut self, order: Order) -> ProcessedOrderResult {
+    pub fn match_bids(&mut self, order: &Order) -> ProcessedOrderResult {
         let mut fills = Vec::new();
         let mut executed_quantity = dec!(0);
         let mut empty_prices = Vec::new();
