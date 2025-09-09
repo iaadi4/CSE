@@ -40,17 +40,19 @@ impl Orderbook {
     }
 
     pub fn process_order(&mut self, mut order: Order) -> ProcessedOrderResult {
+        let order_result: ProcessedOrderResult;
+
         match order.order_side {
             OrderSide::BUY => {
-
+                order_result = self.match_asks(&order);
             },
             OrderSide::SELL => {
-
+                order_result = self.match_bids(&order);
             }
         }
     }
 
-    pub fn match_bids(&mut self, order: Order) -> ProcessedOrderResult {
+    pub fn match_asks(&mut self, order: Order) -> ProcessedOrderResult {
         let mut fills: Vec<Fill> = Vec::new();
         let mut executed_quantity: Decimal = dec!(0);
         let mut empty_prices = Vec::new();
@@ -113,7 +115,7 @@ impl Orderbook {
         }
     }
 
-    pub fn match_asks(&mut self, order: Order) -> ProcessedOrderResult {
+    pub fn match_bids(&mut self, order: Order) -> ProcessedOrderResult {
         let mut fills = Vec::new();
         let mut executed_quantity = dec!(0);
         let mut empty_prices = Vec::new();
