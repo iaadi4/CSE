@@ -231,4 +231,27 @@ impl Orderbook {
             orders.retain(|order| order.user_id != user_id);
         });
     }
+
+    pub fn get_depth(&self) -> (Vec<(Decimal, Decimal)>, Vec<(Decimal, Decimal)>) {
+        let mut bid_depth: Vec<Decimal, Decimal> = Vec::new();
+        let mut ask_depth: Vec<Decimal, Decimal> = Vec::new();
+
+        for (price, orders) in self.asks {
+            let mut total_quantity = Decimal::ZERO;
+            for order in orders {
+                total_quantity += order.quantity;
+            }
+            ask_depth.push((*price, total_quantity));
+        }
+
+        for (price, orders) in self.bids {
+            let mut total_quantity = Decimal::ZERO;
+            for order in orders {
+                total_quantity += order.quantity;
+            }
+            bid_depth.push((*price, total_quantity));
+        }
+
+        (ask_depth, bid_depth)
+    }
 }
