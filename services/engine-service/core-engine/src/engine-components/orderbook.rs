@@ -191,4 +191,24 @@ impl Orderbook {
             fills
         }
     }
+
+    pub fn cancel_order(&mut self, cancel_order: &CancelOrder) -> Result<Order, ()> {
+        let cancel = |orders_map: &mut BTreeMap<Decimal, Vec<Order>>| {
+            if let Some(orders) = order_map.get_mut(&cancel_order.price) {
+                if let Some(index) = orders.iter().position(|order| order.order_id == cancel_order.order_id) {
+                    let removed_order = orders.remove(index);
+                    ok(removed_order)
+                } else {
+                    Err(())
+                }
+            } else {
+                Err(())
+            }
+        }
+
+        match cancel_order.order_side {
+            OrderSide::BUY => cancel(&mut self.bids),
+            OrderSide::SELL => cancel(&mut self.asks)
+        }
+    }
 }

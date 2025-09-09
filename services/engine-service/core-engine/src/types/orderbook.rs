@@ -106,7 +106,7 @@ pub struct CancelOrder {
     pub user_id: String,
     pub order_id: String,
     pub price: Decimal,
-    pub order_side: String,
+    pub order_side: OrderSide,
     pub market: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>
