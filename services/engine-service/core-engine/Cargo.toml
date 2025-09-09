@@ -1,0 +1,9 @@
+[package]
+name = "engine"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rust_decimal = "1.37.2"
+rust_decimal_macros = "1.37.1"
+serde = "1.0.219"
