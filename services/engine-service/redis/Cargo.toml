@@ -1,0 +1,9 @@
+[package]
+name = "redis"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+fred = "10.1.0"
+tokio = "1.47.1"
+uuid = "1.18.1"

@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "redis",
+    "core-engine",
+    "database"
+]
