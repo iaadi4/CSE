@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-fred = "10.1.0"
+anyhow = "1.0"
+fred = { version = "10.1.0", features = ["subscriber-client"] }
 tokio = "1.47.1"
 uuid = "1.18.1"
