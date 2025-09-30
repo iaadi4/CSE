@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Prisma schema
+// Learn more: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -22,62 +19,75 @@ model users {
   bio            String?
   preferences    Json?
   created_at     DateTime        @default(now())
+  
   user_wallets   user_wallets[]
   user_balances  user_balances[]
   transactions   transactions[]
   refresh_tokens sessions[]
+
+  @@map("users")
 }
 
 model sessions {
   id         String   @id @default(uuid())
-  user_id    String   @map("user_id")
+  user_id    String
   token      String   @unique
   expires_at DateTime
   created_at DateTime @default(now())
+
   user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("sessions")
+  @@index([user_id])
 }
 
 model user_wallets {
   id             String          @id @default(uuid())
-  user_id        String          @map("user_id")
+  user_id        String
   wallet_address String          @unique
   is_active      Boolean         @default(false)
   created_at     DateTime        @default(now())
+
   user           users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_balances  user_balances[]
   transactions   transactions[]
 
   @@map("user_wallets")
+  @@index([user_id])
 }
 
 model user_balances {
   id             String       @id @default(uuid())
-  user_id        String       @map("user_id")
-  wallet_id      String       @map("wallet_id")
+  user_id        String
+  wallet_id      String
   currency       String
   balance        Decimal      @default(0) @db.Decimal(18, 9)
   locked_balance Decimal      @default(0) @db.Decimal(18, 9)
   updated_at     DateTime     @default(now())
+
   user           users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
   wallet         user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, wallet_id, currency])
   @@map("user_balances")
+  @@index([user_id])
+  @@index([wallet_id])
 }
 
 model transactions {
   id           String       @id @default(uuid())
-  user_id      String       @map("user_id")
-  wallet_id    String       @map("wallet_id")
+  user_id      String
+  wallet_id    String
   type         String
   currency     String
   amount       Decimal      @db.Decimal(18, 9)
   tx_signature String?
   created_at   DateTime     @default(now())
-  user         users        @relation(fields: [user_id], references: [id])
-  wallet       user_wallets @relation(fields: [wallet_id], references: [id])
+
+  user         users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  wallet       user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
 
   @@map("transactions")
+  @@index([user_id])
+  @@index([wallet_id])
 }
