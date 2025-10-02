@@ -12,82 +12,68 @@ datasource db {
 }
 
 model users {
-  id             String          @id @default(uuid())
-  email          String          @unique
-  password_hash  String?
-  role           String          @default("investor")
-  bio            String?
-  preferences    Json?
-  created_at     DateTime        @default(now())
-  
-  user_wallets   user_wallets[]
-  user_balances  user_balances[]
-  transactions   transactions[]
-  refresh_tokens sessions[]
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String   @unique
+  password_hash String
+  role          String   @default("investor")
+  created_at    DateTime @default(now())
+
+  user_wallets  user_wallets[]
+  user_balances user_balances[]
+  transactions  transactions[]
+  refresh_token String?
 
   @@map("users")
 }
 
-model sessions {
-  id         String   @id @default(uuid())
-  user_id    String
-  token      String   @unique
-  expires_at DateTime
-  created_at DateTime @default(now())
-
-  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@map("sessions")
-  @@index([user_id])
-}
-
 model user_wallets {
-  id             String          @id @default(uuid())
+  id             String   @id @default(uuid())
   user_id        String
-  wallet_address String          @unique
-  is_active      Boolean         @default(false)
-  created_at     DateTime        @default(now())
+  wallet_address String   @unique
+  is_active      Boolean  @default(false)
+  created_at     DateTime @default(now())
 
-  user           users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_balances  user_balances[]
-  transactions   transactions[]
+  user          users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_balances user_balances[]
+  transactions  transactions[]
 
-  @@map("user_wallets")
   @@index([user_id])
+  @@map("user_wallets")
 }
 
 model user_balances {
-  id             String       @id @default(uuid())
+  id             String   @id @default(uuid())
   user_id        String
   wallet_id      String
   currency       String
-  balance        Decimal      @default(0) @db.Decimal(18, 9)
-  locked_balance Decimal      @default(0) @db.Decimal(18, 9)
-  updated_at     DateTime     @default(now())
+  balance        Decimal  @default(0) @db.Decimal(18, 9)
+  locked_balance Decimal  @default(0) @db.Decimal(18, 9)
+  updated_at     DateTime @default(now())
 
-  user           users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  wallet         user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  user   users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  wallet user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, wallet_id, currency])
-  @@map("user_balances")
   @@index([user_id])
   @@index([wallet_id])
+  @@map("user_balances")
 }
 
 model transactions {
-  id           String       @id @default(uuid())
+  id           String   @id @default(uuid())
   user_id      String
   wallet_id    String
   type         String
   currency     String
-  amount       Decimal      @db.Decimal(18, 9)
+  amount       Decimal  @db.Decimal(18, 9)
   tx_signature String?
-  created_at   DateTime     @default(now())
+  created_at   DateTime @default(now())
 
-  user         users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  wallet       user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  user   users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  wallet user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
 
-  @@map("transactions")
   @@index([user_id])
   @@index([wallet_id])
+  @@map("transactions")
 }

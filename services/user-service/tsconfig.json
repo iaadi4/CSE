@@ -4,16 +4,21 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-
+    "baseUrl": "./src",
+    "paths": {
+      "@config/*": ["config/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@controllers/*": ["controllers/*"],
+      "@routes/*": ["routes/*"],
+      "@utils/*": ["utils/*"]
+    },
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": [],
+    "types": ["node"],
     // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    "lib": ["esnext"],
 
     // Other Outputs
     "sourceMap": true,
@@ -39,6 +44,9 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "esm": true
   }
 }
