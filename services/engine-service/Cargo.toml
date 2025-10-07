@@ -3,5 +3,6 @@ resolver = "3"
 members = [
     "redis",
     "core-engine",
-    "database"
+    "database",
+    "ws-stream"
 ]
