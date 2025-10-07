@@ -2928,6 +2928,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "sqlx_postgres"
+version = "0.1.0"
+dependencies = [
+ "sqlx",
+]
+
+[[package]]
 name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
