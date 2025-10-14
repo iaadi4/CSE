@@ -129,3 +129,21 @@ body {
     clip-path: path(evenodd, "M 0 21 Q 0 0 21 0 L 214 0 Q 235 0 235 21 L 235 64 Q 235 85 256 85 L 300 85 Q 321 85 321 106 L 321 149 Q 321 170 342 170 L 385 170 Q 406 170 406 191 L 406 235 Q 406 256 427 256 L 471 256 Q 492 256 492 277 L 492 427 Q 492 448 471 448 L 128 448 Q 107 448 107 427 L 107 342 Q 107 321 86 321 L 21 321 Q 0 321 0 300 Z");
   }
 }
+
+/* Infinite Scroll Animation */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.scroll-animate {
+  animation: scroll 20s linear infinite;
+}
+
+.scroll-animate:hover {
+  animation-play-state: paused;
+}

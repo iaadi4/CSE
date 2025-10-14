@@ -2,7 +2,7 @@ import { IoMdArrowUp } from "react-icons/io";
 
 const Hero = () => {
   return (
-    <section className="min-h-dvh w-dvw flex flex-col lg:flex-row lg:items-start lg:justify-center gap-10 pt-40 items-center">
+    <section className="h-fit w-dvw flex flex-col lg:flex-row lg:items-start lg:justify-center gap-10 pt-40 items-center">
       {/* Video Shape Container */}
       <div
         id="hero-video-container"
@@ -25,11 +25,11 @@ const Hero = () => {
       {/* Hero Content */}
       <div className="flex flex-col gap-10">
         {/* Hero Heading */}
-        <div className="text-3xl md:text-4xl lg:text-5xl xl:text-[4rem] font-cabinet-bold flex flex-col lg:gap-8 xl:gap-14 lg:pt-5 lg:mb-8 text-center lg:text-left">
-          <div className="relative lg:-left-[45%]">
-            Meet CSE,
+        <div className="relative text-3xl md:text-4xl lg:text-5xl xl:text-[4rem] font-cabinet-bold flex flex-col lg:gap-0 xl:gap-0 xl:pt-0 lg:-top-7 lg:pt-0 lg:mb-0 text-center lg:text-left">
+          <div className="relative lg:-left-[45%] flex gap-5 items-center xl:mb-5 justify-center lg:justify-start">
+            <span>Meet</span> <img src="/logo.png" alt="Logo" className="h-32"></img> <span className="font-black" style={{background: 'linear-gradient(48deg,rgba(254, 180, 246, 1) 0%, rgba(173, 249, 238, 1) 50%)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>CSE</span>
           </div>
-          <div className="relative lg:-left-[30%]">
+          <div className="relative lg:-left-[30%] lg:mb-10 xl:mb-14">
             World's First Ever Creator
           </div>
           <div className="relative lg:-left-[15%]">
