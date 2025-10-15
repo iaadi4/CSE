@@ -13,7 +13,7 @@ const Hero = () => {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-fill"
+          className="absolute inset-0 w-full h-full object-cover"
         >
           <source
             src="https://video.gumlet.io/67aac507feefe705cbe0b2ff/688beab8f327d6ddd057fefb/download.mp4"
