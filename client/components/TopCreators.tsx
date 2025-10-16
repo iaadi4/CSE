@@ -4,11 +4,11 @@ const TopCreators = () => {
   // Array of creator logos - using MrBeast for now
   const creators = [
     { id: 1, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 2, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 3, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 4, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 5, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 6, name: "MrBeast", logo: "/mrbeastlogo.png" },
+    { id: 2, name: "CarryMinati", logo: "/carryminati.png" },
+    { id: 3, name: "Ashish Chanchlani", logo: "/ashish.png" },
+    { id: 4, name: "Pewdiepie", logo: "/pewdiepie.png" },
+    { id: 5, name: "Shroud", logo: "/shroud.png" },
+    { id: 6, name: "Scout", logo: "/scout.png" },
   ];
 
   return (
