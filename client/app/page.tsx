@@ -1,5 +1,6 @@
 import Features from "@/components/Features";
 import Hero from "@/components/Hero";
+import HowItWorks from "@/components/HowItWorks";
 import Stats from "@/components/Stats";
 import TopCreators from "@/components/TopCreators";
 import { BentoGrid } from "@/components/ui/bento-grid";
@@ -11,6 +12,8 @@ export default function Home() {
       <TopCreators />
       <Stats />
       <Features />
+      <HowItWorks />
+      <div className="h-dvh w-dvw"></div>
     </main>
   );
 }
