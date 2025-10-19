@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Rust build artifacts
+target/
+*/target/
+
+# Next.js
+.next/
+out/
+
+# Production
+build/
+
+# Environment variables
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
