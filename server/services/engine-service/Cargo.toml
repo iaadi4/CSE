@@ -4,5 +4,7 @@ members = [
     "redis",
     "core-engine",
     "database",
-    "ws-stream"
-, "sqlx_postgres", "router"]
+    "ws-stream",
+    "sqlx_postgres",
+    "router"
+]

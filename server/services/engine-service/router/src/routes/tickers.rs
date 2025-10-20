@@ -1,7 +1,7 @@
 use crate::types::app::AppState;
 use actix_web::web::Data;
 
-use db_processor::query::get_tickers_from_db;
+use sqlx_postgres::query::get_tickers_from_db;
 
 use std::time::Instant;
 

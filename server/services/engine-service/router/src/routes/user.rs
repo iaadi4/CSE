@@ -8,7 +8,7 @@ use crate::types::{
     routes::{CreateUserInput, UserRequests},
 };
 
-use redis::RedisQueues;
+use redis::RedisQueue;
 
 pub async fn create_user(app_state: Data<AppState>) -> actix_web::HttpResponse {
     let starttime = Instant::now();
@@ -29,9 +29,9 @@ pub async fn create_user(app_state: Data<AppState>) -> actix_web::HttpResponse {
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::USERS.to_string(),
+                &RedisQueue::USERS.to_string(),
                 create_user_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 

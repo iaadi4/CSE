@@ -1,5 +1,7 @@
 use sqlx::postgres::PgPoolOptions;
 
+pub mod query;
+
 pub struct PostgresDb {
     pool: sqlx::Pool<sqlx::Postgres>,
 }

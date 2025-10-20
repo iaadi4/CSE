@@ -9,7 +9,7 @@ use crate::types::{
     routes::{GetDepthInput, OrderRequests},
 };
 
-use redis::RedisQueues;
+use redis::RedisQueue;
 
 pub async fn get_depth(
     query: actix_web::web::Query<GetDepthInput>,
@@ -28,9 +28,9 @@ pub async fn get_depth(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 get_depth_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 

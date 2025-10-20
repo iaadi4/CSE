@@ -16,7 +16,7 @@ use crate::types::app::AppState;
 
 use redis::RedisManager;
 
-#[actix_web::main]
+#[tokio::main]
 async fn main() -> std::io::Result<()> {
     std::env::set_var("RUST_LOG", "debug");
     env_logger::init();

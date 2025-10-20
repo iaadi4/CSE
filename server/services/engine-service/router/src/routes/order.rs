@@ -11,7 +11,7 @@ use crate::types::{
     },
 };
 
-use redis::RedisQueues;
+use redis::RedisQueue;
 
 pub async fn execute_order(
     body: Json<CreateOrderInput>,
@@ -31,9 +31,9 @@ pub async fn execute_order(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 create_order_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 
@@ -74,9 +74,9 @@ pub async fn get_open_order(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 get_open_order_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 
@@ -118,9 +118,9 @@ pub async fn cancel_order(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 cancel_order_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 
@@ -161,9 +161,9 @@ pub async fn get_open_orders(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 get_open_orders_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 
@@ -205,9 +205,9 @@ pub async fn cancel_all_orders(
     if let Some(pubsub_id_value) = pubsub_id {
         let result = redis_connection
             .push_and_wait_for_subscriber(
-                RedisQueues::ORDERS.to_string(),
+                &RedisQueue::ORDERS.to_string(),
                 cancel_all_orders_data,
-                pubsub_id_value,
+                &pubsub_id_value.to_string(),
             )
             .await;
 

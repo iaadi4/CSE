@@ -1,6 +1,20 @@
 [package]
 name = "router"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
+actix-cors = "0.7.1"
+actix-web = "4"
+confik = "0.15.0"
+dotenvy = "0.15.7"
+env_logger = "0.11.8"
+rust_decimal = "1.37.2"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
+tokio = "1.47.1"
+
+# Local dependencies
+redis = { path = "../redis" }
+sqlx_postgres = { path = "../sqlx_postgres" }

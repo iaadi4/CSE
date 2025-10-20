@@ -1,5 +1,5 @@
 use actix_web::web::Data;
-use db_processor::query::get_klines_timeseries_data;
+use sqlx_postgres::query::get_klines_timeseries_data;
 
 use std::time::Instant;
 
@@ -26,11 +26,17 @@ pub async fn get_klines(
 
     let pg_pool = app_state.postgres_db.get_pg_connection().unwrap();
 
+    let start_time = if klines_input.start_time.is_empty() {
+        None
+    } else {
+        klines_input.start_time.parse::<i64>().ok()
+    };
+    
     let klines = get_klines_timeseries_data(
         &pg_pool,
         klines_input.symbol,
         klines_input.interval,
-        klines_input.start_time,
+        start_time,
     )
     .await
     .unwrap();
