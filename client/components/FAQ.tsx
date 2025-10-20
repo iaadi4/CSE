@@ -26,7 +26,7 @@ const FAQ: React.FC = () => {
 
   return (
     <section
-      className="w-full px-10 xl:px-40 my-40 flex flex-col gap-10 lg:gap-20"
+      className="w-full px-10 xl:px-40 mt-8 mb-40 md:my-40 flex flex-col gap-10 lg:gap-20"
       aria-label="Frequently Asked Questions"
     >
       {/* Section Heading */}

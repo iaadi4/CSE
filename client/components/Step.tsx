@@ -20,16 +20,16 @@ interface StepProps {
 const Step: React.FC<StepProps> = ({
   title,
   description,
-  image = "/fans-signup.png",
+  image = "/images/how-it-works/fans-signup.png",
 }) => {
   return (
-    <article className="flex flex-col items-center gap-20">
+    <article className="flex flex-col items-center gap-4 md:gap-8 lg:gap-12 xl:gap-20 max-w-4xl">
       {/* Text Content */}
-      <div className="flex flex-col gap-10">
-        <h3 className="font-cabinet-bold text-4xl lg:text-5xl text-center lg:text-left">
+      <div className="flex flex-col gap-3 md:gap-4 lg:gap-6 xl:gap-10">
+        <h3 className="font-cabinet-bold text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-center">
           {title}
         </h3>
-        <p className="font-semibold font-quicksand text-base lg:text-lg text-zinc-700 leading-relaxed">
+        <p className="font-semibold font-quicksand text-sm md:text-base lg:text-lg text-zinc-700 leading-relaxed text-center">
           {description}
         </p>
       </div>
@@ -38,7 +38,7 @@ const Step: React.FC<StepProps> = ({
       <img
         src={image}
         alt={title}
-        className="h-[300px] lg:h-[400px] object-contain"
+        className="h-[200px] md:h-[300px] lg:h-[400px] w-auto object-contain"
         loading="lazy"
       />
     </article>

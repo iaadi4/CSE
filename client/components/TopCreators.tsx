@@ -3,12 +3,12 @@ import React from 'react'
 const TopCreators = () => {
   // Array of creator logos - using MrBeast for now
   const creators = [
-    { id: 1, name: "MrBeast", logo: "/mrbeastlogo.png" },
-    { id: 2, name: "CarryMinati", logo: "/carryminati.png" },
-    { id: 3, name: "Ashish Chanchlani", logo: "/ashish.png" },
-    { id: 4, name: "Pewdiepie", logo: "/pewdiepie.png" },
-    { id: 5, name: "Shroud", logo: "/shroud.png" },
-    { id: 6, name: "Scout", logo: "/scout.png" },
+    { id: 1, name: "MrBeast", logo: "/images/creators/mrbeastlogo.png" },
+    { id: 2, name: "CarryMinati", logo: "/images/creators/carryminati.png" },
+    { id: 3, name: "Ashish Chanchlani", logo: "/images/creators/ashish.png" },
+    { id: 4, name: "Pewdiepie", logo: "/images/creators/pewdiepie.png" },
+    { id: 5, name: "Shroud", logo: "/images/creators/shroud.png" },
+    { id: 6, name: "Scout", logo: "/images/creators/scout.png" },
   ];
 
   return (

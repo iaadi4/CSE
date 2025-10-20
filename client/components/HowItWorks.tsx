@@ -70,13 +70,13 @@ const HowItWorks: React.FC = () => {
   return (
     <section
       ref={containerRef}
-      className="relative h-screen w-full overflow-hidden"
+      className="relative lg:h-screen w-full lg:overflow-hidden mb-40 md:mb-24 lg:mb-0"
       id="how-it-works"
       aria-label="How It Works"
     >
-      <div className="absolute inset-0 flex p-40">
-        {/* Left Sidebar Navigation */}
-        <aside className="w-[30%] h-full border-r-[1px] border-zinc-500 flex items-center justify-center px-8">
+      <div className="flex flex-col lg:flex-row px-6 pt-6 pb-0 md:px-20 md:pt-20 md:pb-0 lg:p-40 lg:absolute lg:inset-0">
+        {/* Left Sidebar Navigation - Hidden on mobile */}
+        <aside className="hidden lg:flex w-[30%] h-full border-r-[1px] border-zinc-500 items-center justify-center px-8">
           <Navigation
             steps={HOW_IT_WORKS_STEPS}
             currentStep={currentStep}
@@ -85,8 +85,8 @@ const HowItWorks: React.FC = () => {
           />
         </aside>
 
-        {/* Right Content Area */}
-        <main className="w-[70%] h-full pl-40">
+        {/* Right Content Area - Full width on mobile */}
+        <main className="w-full lg:w-[70%] lg:h-full lg:pl-40">
           <Content
             allSubsteps={allSubsteps}
             contentRef={contentRef}

@@ -26,6 +26,19 @@ export const useScrollAnimation = ({
   useEffect(() => {
     if (!containerRef.current || !contentRef.current) return;
 
+    // Only enable scroll animation on desktop (lg breakpoint = 1024px)
+    const isDesktop = window.innerWidth >= 1024;
+    
+    console.log('ScrollAnimation: isDesktop =', isDesktop, 'width =', window.innerWidth);
+    
+    if (!isDesktop) {
+      // Reset any GSAP inline styles on mobile
+      gsap.set(contentRef.current, { clearProps: "all" });
+      return;
+    }
+
+    console.log('ScrollAnimation: Initializing GSAP...');
+
     const ctx = gsap.context(() => {
       const vh = window.innerHeight;
       const totalDistance = (SCROLL_CONFIG.TOTAL_SUBSTEPS - 1) * vh;
@@ -37,6 +50,9 @@ export const useScrollAnimation = ({
           end: `+=${SCROLL_CONFIG.TOTAL_SUBSTEPS * vh}`,
           pin: true,
           scrub: SCROLL_CONFIG.SCRUB_SPEED,
+          markers: false, // Set to true for debugging
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
           onUpdate: (self) => {
             const currentIndex = Math.min(
               Math.floor(self.progress * SCROLL_CONFIG.TOTAL_SUBSTEPS),
@@ -61,7 +77,13 @@ export const useScrollAnimation = ({
       );
     }, containerRef);
 
+    // Refresh ScrollTrigger after a short delay to ensure layout is ready
+    const refreshTimeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 100);
+
     return () => {
+      clearTimeout(refreshTimeout);
       ctx.revert();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
