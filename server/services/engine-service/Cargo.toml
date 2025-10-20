@@ -5,4 +5,4 @@ members = [
     "core-engine",
     "database",
     "ws-stream"
-, "sqlx_postgres"]
+, "sqlx_postgres", "router"]
