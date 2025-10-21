@@ -32,7 +32,7 @@ export const FAQItem: React.FC<FAQItemProps> = ({
           {question}
         </h3>
         <ChevronDown
-          className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
+          className={`w-6 h-6 shrink-0 transition-transform duration-300 ${
             isOpen ? "rotate-180" : ""
           }`}
         />

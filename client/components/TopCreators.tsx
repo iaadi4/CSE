@@ -17,10 +17,10 @@ const TopCreators = () => {
             <div className='font-cabinet-medium text-center md:px-5 xl:text-lg h-fit mb-4'>Join World's Top Content Creators</div>
             <div id='scroll-parent' className='h-full relative w-full overflow-x-hidden md:pt-5'>
                 {/* Left gradient shadow */}
-                <div className='absolute left-0 top-0 w-20 lg:w-32 h-full bg-gradient-to-r from-[#F3F4F4] to-transparent z-10 pointer-events-none'></div>
+                <div className='absolute left-0 top-0 w-20 lg:w-32 h-full bg-linear-to-r from-[#F3F4F4] to-transparent z-10 pointer-events-none'></div>
                 
                 {/* Right gradient shadow */}
-                <div className='absolute rounded-r-3xl right-0 top-0 w-20 lg:w-32 h-full bg-gradient-to-l from-[#F3F4F4] to-transparent z-10 pointer-events-none'></div>
+                <div className='absolute rounded-r-3xl right-0 top-0 w-20 lg:w-32 h-full bg-linear-to-l from-[#F3F4F4] to-transparent z-10 pointer-events-none'></div>
                 
                 {/* Scrolling container with duplicated content for seamless loop */}
                 <div className='flex items-center gap-4 lg:gap-12 xl:gap-16 scroll-animate absolute'>
@@ -28,7 +28,7 @@ const TopCreators = () => {
                   {creators.map((creator) => (
                     <div
                       key={`first-${creator.id}`}
-                      className='flex-shrink-0 w-32 h-20 flex items-center justify-center'
+                      className='shrink-0 w-32 h-20 flex items-center justify-center'
                     >
                       <img 
                         src={creator.logo} 
@@ -41,7 +41,7 @@ const TopCreators = () => {
                   {creators.map((creator) => (
                     <div
                       key={`second-${creator.id}`}
-                      className='flex-shrink-0 w-32 h-20 flex items-center justify-center'
+                      className='shrink-0 w-32 h-20 flex items-center justify-center'
                     >
                       <img 
                         src={creator.logo} 
@@ -54,7 +54,7 @@ const TopCreators = () => {
                   {creators.map((creator) => (
                     <div
                       key={`third-${creator.id}`}
-                      className='flex-shrink-0 w-32 h-20 flex items-center justify-center'
+                      className='shrink-0 w-32 h-20 flex items-center justify-center'
                     >
                       <img 
                         src={creator.logo} 

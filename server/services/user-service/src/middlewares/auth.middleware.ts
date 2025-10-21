@@ -12,7 +12,7 @@ class AuthMiddleware {
         const token = req.cookies.accessToken;
 
         if (!token) {
-            return Send.unauthorized(res, null);
+            return Send.unauthorized(res, { message: "No access token provided" });
         }
 
         try {
@@ -22,8 +22,11 @@ class AuthMiddleware {
 
             next();
         } catch (error) {
+            if (error instanceof jwt.TokenExpiredError) {
+                return Send.unauthorized(res, { message: "Access token expired", code: "TOKEN_EXPIRED" });
+            }
             console.error("Authentication failed:", error);
-            return Send.unauthorized(res, null);
+            return Send.unauthorized(res, { message: "Invalid access token" });
         }
     };
 

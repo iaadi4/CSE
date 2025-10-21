@@ -13,6 +13,7 @@ class UserController {
                     id: true,
                     username: true,
                     email: true,
+                    role: true,
                     created_at: true,
                 }
             });
@@ -21,7 +22,7 @@ class UserController {
                 return Send.notFound(res, {}, "User not found");
             }
 
-            return Send.success(res, { user });
+            return Send.success(res, user);
         } catch (error) {
             console.error("Error fetching user info:", error);
             return Send.error(res, {}, "Internal server error");

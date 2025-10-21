@@ -76,7 +76,7 @@ const HowItWorks: React.FC = () => {
     >
       <div className="flex flex-col lg:flex-row px-6 pt-6 pb-0 md:px-20 md:pt-20 md:pb-0 lg:p-40 lg:absolute lg:inset-0">
         {/* Left Sidebar Navigation - Hidden on mobile */}
-        <aside className="hidden lg:flex w-[30%] h-full border-r-[1px] border-zinc-500 items-center justify-center px-8">
+        <aside className="hidden lg:flex w-[30%] h-full border-r border-zinc-500 items-center justify-center px-8">
           <Navigation
             steps={HOW_IT_WORKS_STEPS}
             currentStep={currentStep}

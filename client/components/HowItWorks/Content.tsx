@@ -26,7 +26,7 @@ export const Content: React.FC<ContentProps> = ({
           ref={(el) => {
             if (el) stepsRef.current[index] = el;
           }}
-          className="lg:h-screen w-full flex items-center justify-center px-4 md:px-10 lg:px-20 py-8 lg:py-0 flex-shrink-0"
+          className="lg:h-screen w-full flex items-center justify-center px-4 md:px-10 lg:px-20 py-8 lg:py-0 shrink-0"
         >
           <Step
             title={substep.title}

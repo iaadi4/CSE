@@ -37,7 +37,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div
               className={`h-7 w-7 rounded-full ${
                 currentStep === index ? "bg-brand-green" : "bg-zinc-300"
-              } text-black flex items-center justify-center text-sm transition-all duration-300 flex-shrink-0`}
+              } text-black flex items-center justify-center text-sm transition-all duration-300 shrink-0`}
               aria-current={currentStep === index ? "step" : undefined}
             >
               {index + 1}
@@ -68,7 +68,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   role="listitem"
                 >
                   <div
-                    className={`h-2 w-2 rounded-full transition-all duration-300 flex-shrink-0 ${
+                    className={`h-2 w-2 rounded-full transition-all duration-300 shrink-0 ${
                       currentSubstep === subIndex && currentStep === index
                         ? "bg-brand-green scale-125"
                         : "bg-zinc-400"
