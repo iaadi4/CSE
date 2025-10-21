@@ -1,0 +1,120 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: exchange-postgres
+    environment:
+      POSTGRES_DB: exchange
+      POSTGRES_USER: exchange_user
+      POSTGRES_PASSWORD: exchange_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/migrations:/docker-entrypoint-initdb.d/
+      - ./docker-init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - exchange-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U exchange_user -d exchange"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: exchange-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - exchange-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Database Service
+  database-service:
+    build: .
+    container_name: exchange-database-service
+    command: ["./database"]
+    environment:
+      DATABASE_URL: postgresql://exchange_user:exchange_password@postgres:5432/exchange
+      RUST_LOG: info
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - exchange-network
+    restart: unless-stopped
+
+  # Core Engine Service
+  core-engine:
+    build: .
+    container_name: exchange-core-engine
+    command: ["./core-engine"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://exchange_user:exchange_password@postgres:5432/exchange
+      RUST_LOG: info
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - exchange-network
+    restart: unless-stopped
+
+  # Router Service (API Gateway)
+  router:
+    build: .
+    container_name: exchange-router
+    command: ["./router"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://exchange_user:exchange_password@postgres:5432/exchange
+      SERVER_ADDR: 0.0.0.0:8081
+      RUST_LOG: info
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - exchange-network
+    restart: unless-stopped
+
+  # WebSocket Stream Service
+  ws-stream:
+    build: .
+    container_name: exchange-ws-stream
+    command: ["./ws-stream"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      WS_PORT: 8082
+      RUST_LOG: info
+    ports:
+      - "8082:8082"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - exchange-network
+    restart: unless-stopped
+
+networks:
+  exchange-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,39 @@
+# Target directory (build artifacts)
+target/
+*/target/
+
+# Rust backup files
+**/*.rs.bk
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Environment files (will be provided at runtime)
+.env.local
+.env.development
+.env.test
+
+# Documentation
+*.md
+
+# Docker files (not needed inside container)
+.dockerignore
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
