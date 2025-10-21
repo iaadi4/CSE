@@ -19,10 +19,15 @@ model users {
   role          String   @default("investor")
   created_at    DateTime @default(now())
 
-  user_wallets  user_wallets[]
-  user_balances user_balances[]
-  transactions  transactions[]
-  refresh_token String?
+  user_wallets         user_wallets[]
+  user_balances        user_balances[]
+  transactions         transactions[]
+  creator_profile      creator_profiles?
+  creator_applications creator_applications[]
+  creator_documents    creator_documents[]
+  creator_social_links creator_social_links[]
+  verification_logs    verification_logs[]
+  refresh_token        String?
 
   @@map("users")
 }
@@ -76,4 +81,104 @@ model transactions {
   @@index([user_id])
   @@index([wallet_id])
   @@map("transactions")
+}
+
+// Creator Onboarding Models
+
+model creator_profiles {
+  id                String   @id @default(uuid())
+  user_id           String   @unique
+  // Basic Information
+  full_name         String
+  phone_number      String?
+  // Creator Profile
+  creator_handle    String   @unique // Stage name / public handle
+  bio               String   @db.Text // Max 500 chars enforced at app level
+  profile_picture   String? // URL to uploaded image
+  category          String // Musician, Influencer, Artist, Filmmaker, Gamer, Other
+  custom_category   String? // If category is "Other"
+  // Influence Metrics
+  engagement_metrics String? @db.Text // Optional engagement stats
+  // Token Details
+  token_name        String // e.g., "JANE"
+  token_symbol      String   @unique // 3-10 characters
+  ico_supply        Decimal  @db.Decimal(18, 2) // Total tokens for ICO
+  funding_goal      Decimal? @db.Decimal(18, 2) // Optional funding target in USDC
+  token_pitch       String   @db.Text // Max 1000 chars enforced at app level
+  // System fields
+  status            String   @default("inactive") // "inactive" | "active"
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([creator_handle])
+  @@index([token_symbol])
+  @@map("creator_profiles")
+}
+
+model creator_applications {
+  id                         String    @id @default(uuid())
+  user_id                    String
+  state                      String    @default("pending_submission") // "pending_submission" | "under_review" | "kyc_pending" | "approved" | "rejected"
+  rejection_reason           String?   @db.Text
+  content_ownership_declared Boolean   @default(false) // Checkbox confirmation
+  submitted_at               DateTime  @default(now())
+  reviewed_at                DateTime?
+  approved_at                DateTime?
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([state])
+  @@map("creator_applications")
+}
+
+model creator_documents {
+  id         String   @id @default(uuid())
+  user_id    String
+  type       String // "government_id" | "tax" | "residence" | "other"
+  file_url   String
+  status     String   @default("pending") // "pending" | "verified" | "rejected"
+  notes      String?  @db.Text
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([status])
+  @@map("creator_documents")
+}
+
+model creator_social_links {
+  id              String   @id @default(uuid())
+  user_id         String
+  platform        String // "youtube" | "tiktok" | "instagram" | "twitter" | "other"
+  handle          String
+  url             String
+  follower_count  Int? // Optional follower/subscriber count
+  verified        Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("creator_social_links")
+}
+
+model verification_logs {
+  id         String   @id @default(uuid())
+  user_id    String
+  action     String // "application_submitted" | "state_changed" | "document_uploaded" | "profile_updated" | etc.
+  actor      String // "system" | "admin" | user_id
+  metadata   Json? // JSON blob for additional context
+  created_at DateTime @default(now())
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("verification_logs")
 }

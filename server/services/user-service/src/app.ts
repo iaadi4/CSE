@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import appConfig from "./config/app.config.js";
 import userRoutes from "./routes/user.routes.js";
+import creatorRoutes from "./routes/creator.routes.js";
 
 class App {
     private app: Express;
@@ -28,6 +29,7 @@ class App {
     private initRoutes() {
         this.app.use("/api/auth", authRoutes);
         this.app.use("/api/user", userRoutes);
+        this.app.use("/api/creators", creatorRoutes);
     }
 
     public start() {
