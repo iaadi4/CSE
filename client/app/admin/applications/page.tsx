@@ -240,7 +240,7 @@ export default function AdminApplicationsPage() {
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                          <div className="shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
                             <span className="text-green-700 font-semibold">
                               {application.creator_handle.charAt(0).toUpperCase()}
                             </span>

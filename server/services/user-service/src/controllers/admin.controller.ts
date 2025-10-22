@@ -216,41 +216,67 @@ class AdminController {
       // Check if user is admin
       const user = await prisma.users.findUnique({
         where: { id: userId },
+        select: { role: true },
       });
 
       if (user?.role !== "admin") {
         return Send.forbidden(res, null, "Admin access required");
       }
 
-      const application = await prisma.creator_applications.findUnique({
+      // Get current application
+      const currentApplication = await prisma.creator_applications.findUnique({
         where: { id },
       });
 
-      if (!application) {
+      if (!currentApplication) {
         return Send.notFound(res, null, "Application not found");
       }
 
-      // Update application state to approved
-      const updatedApplication = await prisma.creator_applications.update({
-        where: { id },
-        data: {
-          state: "approved",
-          reviewed_at: new Date(),
-          rejection_reason: null,
-        },
-      });
+      // Update application in a transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Update application state to approved
+        const application = await tx.creator_applications.update({
+          where: { id },
+          data: {
+            state: "approved",
+            approved_at: new Date(),
+            reviewed_at: new Date(),
+            rejection_reason: null,
+          },
+        });
 
-      // Update user role to creator
-      await prisma.users.update({
-        where: { id: application.user_id },
-        data: {
-          role: "creator",
-        },
+        // Activate creator profile
+        await tx.creator_profiles.updateMany({
+          where: { user_id: currentApplication.user_id },
+          data: { status: "active" },
+        });
+
+        // Update user role to creator
+        await tx.users.update({
+          where: { id: currentApplication.user_id },
+          data: { role: "creator" },
+        });
+
+        // Log the action
+        await tx.verification_logs.create({
+          data: {
+            user_id: currentApplication.user_id,
+            action: "application_approved",
+            actor: userId,
+            metadata: {
+              old_state: currentApplication.state,
+              new_state: "approved",
+              application_id: id,
+            },
+          },
+        });
+
+        return application;
       });
 
       return Send.success(
         res,
-        updatedApplication,
+        result,
         "Application approved successfully"
       );
     } catch (error: any) {
@@ -276,33 +302,61 @@ class AdminController {
       // Check if user is admin
       const user = await prisma.users.findUnique({
         where: { id: userId },
+        select: { role: true },
       });
 
       if (user?.role !== "admin") {
         return Send.forbidden(res, null, "Admin access required");
       }
 
-      const application = await prisma.creator_applications.findUnique({
+      // Get current application
+      const currentApplication = await prisma.creator_applications.findUnique({
         where: { id },
       });
 
-      if (!application) {
+      if (!currentApplication) {
         return Send.notFound(res, null, "Application not found");
       }
 
-      // Update application state to rejected
-      const updatedApplication = await prisma.creator_applications.update({
-        where: { id },
-        data: {
-          state: "rejected",
-          reviewed_at: new Date(),
-          rejection_reason: reason || "Application rejected by admin",
-        },
+      // Update application in a transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Update application state to rejected
+        const application = await tx.creator_applications.update({
+          where: { id },
+          data: {
+            state: "rejected",
+            reviewed_at: new Date(),
+            rejection_reason: reason || "Application rejected by admin",
+          },
+        });
+
+        // Deactivate creator profile if it exists
+        await tx.creator_profiles.updateMany({
+          where: { user_id: currentApplication.user_id },
+          data: { status: "inactive" },
+        });
+
+        // Log the action
+        await tx.verification_logs.create({
+          data: {
+            user_id: currentApplication.user_id,
+            action: "application_rejected",
+            actor: userId,
+            metadata: {
+              old_state: currentApplication.state,
+              new_state: "rejected",
+              rejection_reason: reason || "Application rejected by admin",
+              application_id: id,
+            },
+          },
+        });
+
+        return application;
       });
 
       return Send.success(
         res,
-        updatedApplication,
+        result,
         "Application rejected successfully"
       );
     } catch (error: any) {
@@ -328,31 +382,76 @@ class AdminController {
       // Check if user is admin
       const user = await prisma.users.findUnique({
         where: { id: userId },
+        select: { role: true },
       });
 
       if (user?.role !== "admin") {
         return Send.forbidden(res, null, "Admin access required");
       }
 
-      const application = await prisma.creator_applications.findUnique({
+      // Get current application
+      const currentApplication = await prisma.creator_applications.findUnique({
         where: { id },
       });
 
-      if (!application) {
+      if (!currentApplication) {
         return Send.notFound(res, null, "Application not found");
       }
 
-      // Update application state
-      const updatedApplication = await prisma.creator_applications.update({
-        where: { id },
-        data: {
-          state,
-        },
+      // Update application in a transaction
+      const result = await prisma.$transaction(async (tx) => {
+        // Update application state
+        const application = await tx.creator_applications.update({
+          where: { id },
+          data: {
+            state,
+            ...(state === "approved" && { approved_at: new Date() }),
+            ...(state === "under_review" && { reviewed_at: new Date() }),
+            ...(state === "rejected" && { reviewed_at: new Date() }),
+          },
+        });
+
+        // Handle state-specific actions
+        if (state === "approved") {
+          // Activate creator profile
+          await tx.creator_profiles.updateMany({
+            where: { user_id: currentApplication.user_id },
+            data: { status: "active" },
+          });
+
+          // Update user role to creator
+          await tx.users.update({
+            where: { id: currentApplication.user_id },
+            data: { role: "creator" },
+          });
+        } else if (state === "rejected" || state === "inactive") {
+          // Deactivate creator profile
+          await tx.creator_profiles.updateMany({
+            where: { user_id: currentApplication.user_id },
+            data: { status: "inactive" },
+          });
+        }
+
+        // Log the action
+        await tx.verification_logs.create({
+          data: {
+            user_id: currentApplication.user_id,
+            action: "state_changed",
+            actor: userId,
+            metadata: {
+              old_state: currentApplication.state,
+              new_state: state,
+              application_id: id,
+            },
+          },
+        });
+
+        return application;
       });
 
       return Send.success(
         res,
-        updatedApplication,
+        result,
         "Application state updated successfully"
       );
     } catch (error: any) {
