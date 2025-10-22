@@ -113,6 +113,107 @@ export const AuthApi = {
     ),
 };
 
+// Creator API
+export interface SocialLink {
+  platform: "youtube" | "tiktok" | "instagram" | "twitter" | "other";
+  handle: string;
+  url: string;
+  follower_count?: number;
+}
+
+export interface CreatorApplicationData {
+  // Basic Information
+  full_name: string;
+  phone_number?: string;
+  
+  // Creator Profile
+  creator_handle: string;
+  bio: string;
+  profile_picture?: string;
+  category: string;
+  custom_category?: string;
+  
+  // Social Media
+  social_links: SocialLink[];
+  engagement_metrics?: string;
+  
+  // Token Details
+  token_name: string;
+  token_symbol: string;
+  ico_supply: number;
+  funding_goal?: number;
+  token_pitch: string;
+  
+  // Verification
+  government_id_url: string;
+  content_ownership_declared: boolean;
+}
+
+export const CreatorApi = {
+  submitApplication: (data: CreatorApplicationData) =>
+    apiClient.post<ApiResponse<any>>("/api/creators/apply", data),
+
+  getApplicationStatus: () =>
+    apiClient.get<ApiResponse<any>>("/api/creators/application"),
+
+  updateProfile: (data: Partial<CreatorApplicationData>) =>
+    apiClient.patch<ApiResponse<any>>("/api/creators/profile", data),
+
+  uploadFile: (file: File, type: "profile_picture" | "government_id") => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", type);
+    return apiClient.post<ApiResponse<{ url: string }>>("/api/creators/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+};
+
+// Admin API
+export interface CreatorApplication {
+  id: string;
+  user_id: string;
+  full_name: string;
+  creator_handle: string;
+  email: string;
+  token_name: string;
+  token_symbol: string;
+  bio: string;
+  category: string;
+  state: "pending_submission" | "under_review" | "kyc_pending" | "approved" | "rejected";
+  submitted_at: string;
+  reviewed_at?: string;
+  rejection_reason?: string;
+  social_links?: SocialLink[];
+  phone_number?: string;
+  profile_picture?: string;
+  engagement_metrics?: string;
+  ico_supply: number;
+  funding_goal?: number;
+  token_pitch: string;
+  government_id_url: string;
+  content_ownership_declared: boolean;
+}
+
+export const AdminApi = {
+  getAllApplications: () =>
+    apiClient.get<ApiResponse<CreatorApplication[]>>("/api/admin/creator-applications"),
+
+  getApplicationById: (id: string) =>
+    apiClient.get<ApiResponse<CreatorApplication>>(`/api/admin/creator-applications/${id}`),
+
+  approveApplication: (id: string) =>
+    apiClient.post<ApiResponse<any>>(`/api/admin/creator-applications/${id}/approve`),
+
+  rejectApplication: (id: string, reason: string) =>
+    apiClient.post<ApiResponse<any>>(`/api/admin/creator-applications/${id}/reject`, { reason }),
+
+  updateApplicationState: (id: string, state: string) =>
+    apiClient.patch<ApiResponse<any>>(`/api/admin/creator-applications/${id}/state`, { state }),
+};
+
 // Export legacy ApiClient for backward compatibility (will be removed)
 export class ApiClient {
   static async login(email: string, password: string) {

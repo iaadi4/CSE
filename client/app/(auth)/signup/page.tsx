@@ -7,12 +7,14 @@ import { registerSchema, type RegisterFormData } from "@/lib/validations/auth";
 import { z } from "zod";
 import { FormInput } from "@/components/ui/form-input";
 import { Spinner } from "@/components/ui/spinner";
+import { CreatorOnboardingDialog } from "@/components/creator/onboarding-dialog";
 
 export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
   const [validationErrors, setValidationErrors] = useState<
     Partial<Record<keyof RegisterFormData, string>>
   >({});
@@ -31,12 +33,20 @@ export default function SignupPage() {
         confirmPassword,
       });
 
-      registerMutation.mutate({
-        username: validatedData.username,
-        email: validatedData.email,
-        password: validatedData.password,
-        password_confirmation: validatedData.confirmPassword,
-      });
+      registerMutation.mutate(
+        {
+          username: validatedData.username,
+          email: validatedData.email,
+          password: validatedData.password,
+          password_confirmation: validatedData.confirmPassword,
+        },
+        {
+          onSuccess: () => {
+            // Show the creator onboarding dialog after successful registration
+            setShowDialog(true);
+          },
+        }
+      );
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errors: Partial<Record<keyof RegisterFormData, string>> = {};
@@ -52,6 +62,11 @@ export default function SignupPage() {
 
   return (
     <>
+      <CreatorOnboardingDialog
+        isOpen={showDialog}
+        onClose={() => setShowDialog(false)}
+      />
+      
       <div className="flex flex-col text-center items-center gap-5">
         <div className="text-6xl font-cabinet-bold">Welcome back!</div>
         <p className="text-sm font-quicksand max-w-[300px]">
