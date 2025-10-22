@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminApi, type CreatorApplication } from "@/lib/api";
@@ -21,6 +21,9 @@ export default function ApplicationDetailPage() {
   const queryClient = useQueryClient();
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const applicationId = params.id as string;
 
@@ -29,6 +32,33 @@ export default function ApplicationDetailPage() {
     queryFn: async () => {
       const response = await AdminApi.getApplicationById(applicationId);
       return response.data.data;
+    },
+  });
+
+  // Set initial state when data is loaded
+  useEffect(() => {
+    if (data) {
+      setSelectedState((data as CreatorApplication).state);
+    }
+  }, [data]);
+
+  const updateStateMutation = useMutation({
+    mutationFn: async (newState: string) => {
+      await AdminApi.updateApplicationState(applicationId, newState);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "applications"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "application", applicationId],
+      });
+      setToastMessage("Application status updated successfully!");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+    onError: () => {
+      setToastMessage("Failed to update application status");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     },
   });
 
@@ -41,7 +71,17 @@ export default function ApplicationDetailPage() {
       queryClient.invalidateQueries({
         queryKey: ["admin", "application", applicationId],
       });
-      router.push("/admin/applications");
+      setToastMessage("Application approved successfully!");
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        router.push("/admin/applications");
+      }, 2000);
+    },
+    onError: () => {
+      setToastMessage("Failed to approve application");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     },
   });
 
@@ -55,7 +95,17 @@ export default function ApplicationDetailPage() {
         queryKey: ["admin", "application", applicationId],
       });
       setShowRejectModal(false);
-      router.push("/admin/applications");
+      setToastMessage("Application rejected successfully!");
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+        router.push("/admin/applications");
+      }, 2000);
+    },
+    onError: () => {
+      setToastMessage("Failed to reject application");
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
     },
   });
 
@@ -71,6 +121,13 @@ export default function ApplicationDetailPage() {
       return;
     }
     rejectMutation.mutate(rejectionReason);
+  };
+
+  const handleStateChange = (newState: string) => {
+    setSelectedState(newState);
+    if (confirm(`Are you sure you want to change the application state to "${newState}"?`)) {
+      updateStateMutation.mutate(newState);
+    }
   };
 
   const application = data as CreatorApplication;
@@ -160,9 +217,27 @@ export default function ApplicationDetailPage() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
+              {/* State Update Dropdown */}
+              <div className="flex flex-col">
+                <label className="text-xs text-gray-600 mb-1">Update Status</label>
+                <select
+                  value={selectedState}
+                  onChange={(e) => handleStateChange(e.target.value)}
+                  disabled={updateStateMutation.isPending}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:opacity-50 bg-white"
+                >
+                  <option value="under_review">Under Review</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="kyc_pending">KYC Pending</option>
+                </select>
+              </div>
+
+              {/* Action Buttons */}
               {canApproveOrReject && (
                 <>
+                  <div className="h-12 w-px bg-gray-300"></div>
                   <button
                     onClick={() => setShowRejectModal(true)}
                     disabled={rejectMutation.isPending}
@@ -422,6 +497,34 @@ export default function ApplicationDetailPage() {
                 </p>
               </div>
             </div>
+
+            {/* Admin Actions Info */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h3 className="font-cabinet-bold text-lg mb-3">Quick Actions</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <AiOutlineCheck className="text-green-600" size={16} />
+                  <span>Use "Approve" to accept the application</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <AiOutlineClose className="text-red-600" size={16} />
+                  <span>Use "Reject" to decline with reason</span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span>Use dropdown to update status anytime</span>
+                </div>
+                {application.state === "approved" && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-green-700 font-medium">
+                      ✓ User has been granted creator role
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
@@ -464,6 +567,14 @@ export default function ApplicationDetailPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Toast Notification */}
+      {showToast && (
+        <div className="fixed bottom-8 right-8 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 z-50 animate-slide-up">
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <p className="font-medium">{toastMessage}</p>
         </div>
       )}
     </div>

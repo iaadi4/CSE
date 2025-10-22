@@ -86,29 +86,29 @@ model transactions {
 // Creator Onboarding Models
 
 model creator_profiles {
-  id                String   @id @default(uuid())
-  user_id           String   @unique
+  id                 String   @id @default(uuid())
+  user_id            String   @unique
   // Basic Information
-  full_name         String
-  phone_number      String?
+  full_name          String
+  phone_number       String?
   // Creator Profile
-  creator_handle    String   @unique // Stage name / public handle
-  bio               String   @db.Text // Max 500 chars enforced at app level
-  profile_picture   String? // URL to uploaded image
-  category          String // Musician, Influencer, Artist, Filmmaker, Gamer, Other
-  custom_category   String? // If category is "Other"
+  creator_handle     String   @unique // Stage name / public handle
+  bio                String   @db.Text // Max 500 chars enforced at app level
+  profile_picture    String? // URL to uploaded image
+  category           String // Musician, Influencer, Artist, Filmmaker, Gamer, Other
+  custom_category    String? // If category is "Other"
   // Influence Metrics
-  engagement_metrics String? @db.Text // Optional engagement stats
+  engagement_metrics String?  @db.Text // Optional engagement stats
   // Token Details
-  token_name        String // e.g., "JANE"
-  token_symbol      String   @unique // 3-10 characters
-  ico_supply        Decimal  @db.Decimal(18, 2) // Total tokens for ICO
-  funding_goal      Decimal? @db.Decimal(18, 2) // Optional funding target in USDC
-  token_pitch       String   @db.Text // Max 1000 chars enforced at app level
+  token_name         String // e.g., "JANE"
+  token_symbol       String   @unique // 3-10 characters
+  ico_supply         Decimal  @db.Decimal(18, 2) // Total tokens for ICO
+  funding_goal       Decimal? @db.Decimal(18, 2) // Optional funding target in USDC
+  token_pitch        String   @db.Text // Max 1000 chars enforced at app level
   // System fields
-  status            String   @default("inactive") // "inactive" | "active"
-  created_at        DateTime @default(now())
-  updated_at        DateTime @updatedAt
+  status             String   @default("inactive") // "inactive" | "active"
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
 
   user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
@@ -136,7 +136,7 @@ model creator_applications {
 }
 
 model creator_documents {
-  id         String   @id @default(uuid())
+  id         String   @id @default(uuid()) 
   user_id    String
   type       String // "government_id" | "tax" | "residence" | "other"
   file_url   String
@@ -153,14 +153,14 @@ model creator_documents {
 }
 
 model creator_social_links {
-  id              String   @id @default(uuid())
-  user_id         String
-  platform        String // "youtube" | "tiktok" | "instagram" | "twitter" | "other"
-  handle          String
-  url             String
-  follower_count  Int? // Optional follower/subscriber count
-  verified        Boolean  @default(false)
-  created_at      DateTime @default(now())
+  id             String   @id @default(uuid())
+  user_id        String
+  platform       String // "youtube" | "tiktok" | "instagram" | "twitter" | "other"
+  handle         String
+  url            String
+  follower_count Int? // Optional follower/subscriber count
+  verified       Boolean  @default(false)
+  created_at     DateTime @default(now())
 
   user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
