@@ -1,8 +1,9 @@
 import type { Response } from "express";
+import { StatusCode } from "./statusCodes.utils.js";
 
 class Send {
     static success(res: Response, data: any, message = "success") {
-        res.status(200).json({
+        res.status(StatusCode.OK).json({
             ok: true,
             message,
             data
@@ -11,7 +12,7 @@ class Send {
     }
 
     static error(res: Response, data: any, message = "error") {
-        res.status(500).json({
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({
             ok: false,
             message,
             data,
@@ -20,7 +21,7 @@ class Send {
     }
 
     static notFound(res: Response, data: any, message = "not found") {
-        res.status(404).json({
+        res.status(StatusCode.NOT_FOUND).json({
             ok: false,
             message,
             data,
@@ -29,7 +30,7 @@ class Send {
     }
 
     static unauthorized(res: Response, data: any, message = "unauthorized") {
-        res.status(401).json({
+        res.status(StatusCode.UNAUTHORIZED).json({
             ok: false,
             message,
             data,
@@ -38,7 +39,7 @@ class Send {
     }
 
     static validationErrors(res: Response, errors: Record<string, string[]>) {
-        res.status(422).json({
+        res.status(StatusCode.UNAUTHORIZED).json({
             ok: false,
             message: "Validation error",
             errors,
@@ -47,7 +48,7 @@ class Send {
     }
 
     static forbidden(res: Response, data: any, message = "forbidden") {
-        res.status(403).json({
+        res.status(StatusCode.FORBIDDEN).json({
             ok: false,
             message,
             data,
@@ -56,7 +57,7 @@ class Send {
     }
 
     static badRequest(res: Response, data: any, message = "bad request") {
-        res.status(400).json({
+        res.status(StatusCode.BAD_REQUEST).json({
             ok: false,
             message,
             data,
