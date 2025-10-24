@@ -1,6 +1,3 @@
-// Prisma schema
-// Learn more: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -11,102 +8,189 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  investor
+  creator
+  admin
+}
+
+// only USDC for now, can expand later
+enum Currency {
+  USDC
+}
+
+enum Chain {
+  solana
+  ethereum
+  polygon
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  transfer
+}
+
+enum TransactionStatus {
+  pending
+  confirmed
+  failed
+}
+
+// ------------------- USERS -------------------
+
 model users {
   id            String   @id @default(uuid())
   username      String   @unique
   email         String   @unique
   password_hash String
-  role          String   @default("investor")
+  role          UserRole @default(investor)
   created_at    DateTime @default(now())
 
   user_wallets         user_wallets[]
   user_balances        user_balances[]
   transactions         transactions[]
+  deposit_addresses    deposit_addresses[]
+  refresh_tokens       refresh_tokens[] // Relation to the new model
   creator_profile      creator_profiles?
   creator_applications creator_applications[]
   creator_documents    creator_documents[]
   creator_social_links creator_social_links[]
   verification_logs    verification_logs[]
-  refresh_token        String?
 
   @@map("users")
 }
+
+model refresh_tokens {
+  id        String   @id @default(uuid())
+  user_id   String
+  token     String   @unique
+  expires   DateTime
+  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("refresh_tokens")
+}
+
+// ------------------- USER WALLETS -------------------
 
 model user_wallets {
   id             String   @id @default(uuid())
   user_id        String
   wallet_address String   @unique
-  is_active      Boolean  @default(false)
+  is_active      Boolean  @default(true)
   created_at     DateTime @default(now())
 
-  user          users           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_balances user_balances[]
-  transactions  transactions[]
+  user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transactions transactions[]
 
   @@index([user_id])
   @@map("user_wallets")
 }
 
+// ------------------- USER BALANCES -------------------
+
+// Represents the user's internal, off-chain balance for each currency.
 model user_balances {
   id             String   @id @default(uuid())
   user_id        String
-  wallet_id      String
-  currency       String
+  currency       Currency
   balance        Decimal  @default(0) @db.Decimal(18, 9)
   locked_balance Decimal  @default(0) @db.Decimal(18, 9)
-  updated_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  user   users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  wallet user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@unique([user_id, wallet_id, currency])
+  @@unique([user_id, currency])
   @@index([user_id])
-  @@index([wallet_id])
   @@map("user_balances")
 }
 
-model transactions {
-  id           String   @id @default(uuid())
-  user_id      String
-  wallet_id    String
-  type         String
-  currency     String
-  amount       Decimal  @db.Decimal(18, 9)
-  tx_signature String?
-  created_at   DateTime @default(now())
+// ------------------- DEPOSIT ADDRESSES -------------------
 
-  user   users        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  wallet user_wallets @relation(fields: [wallet_id], references: [id], onDelete: Cascade)
+model deposit_addresses {
+  id         String   @id @default(uuid())
+  user_id    String
+  chain      Chain
+  currency   Currency
+  address    String   @unique
+  is_active  Boolean  @default(true)
+  created_at DateTime @default(now())
+
+  user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transactions transactions[]
+
+  @@index([user_id])
+  @@index([chain])
+  @@map("deposit_addresses")
+}
+
+// ------------------- TRANSACTIONS -------------------
+
+model transactions {
+  id                 String            @id @default(uuid())
+  // Denormalized user_id for easier querying of a user's transactions.
+  user_id            String
+  wallet_id          String?
+  deposit_address_id String?
+  type               TransactionType
+  currency           Currency
+  amount             Decimal           @db.Decimal(18, 9)
+  blockchain_hash    String?           @map("blockchain_hash") // More generic name than tx_signature
+  status             TransactionStatus @default(pending)
+  confirmations      Int?
+  created_at         DateTime          @default(now())
+  updated_at         DateTime          @updatedAt
+
+  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  // Use SetNull to preserve transaction history if a wallet or address is deleted.
+  wallet          user_wallets?      @relation(fields: [wallet_id], references: [id], onDelete: SetNull)
+  deposit_address deposit_addresses? @relation(fields: [deposit_address_id], references: [id], onDelete: SetNull)
 
   @@index([user_id])
   @@index([wallet_id])
+  @@index([deposit_address_id])
   @@map("transactions")
 }
 
-// Creator Onboarding Models
+// ------------------- BLOCKCHAIN EVENTS -------------------
+
+model blockchain_events {
+  id              String   @id @default(uuid())
+  chain           Chain
+  blockchain_hash String   @unique @map("blockchain_hash")
+  block_slot      BigInt?
+  event_type      String // "deposit" | "withdrawal"
+  raw_data        Json?
+  processed       Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  @@index([chain])
+  @@index([blockchain_hash])
+  @@map("blockchain_events")
+}
+
+
+// ------------------- CREATOR SCHEMAS -------------------
 
 model creator_profiles {
   id                 String   @id @default(uuid())
   user_id            String   @unique
-  // Basic Information
   full_name          String
   phone_number       String?
-  // Creator Profile
-  creator_handle     String   @unique // Stage name / public handle
-  bio                String   @db.Text // Max 500 chars enforced at app level
-  profile_picture    String? // URL to uploaded image
-  category           String // Musician, Influencer, Artist, Filmmaker, Gamer, Other
-  custom_category    String? // If category is "Other"
-  // Influence Metrics
-  engagement_metrics String?  @db.Text // Optional engagement stats
-  // Token Details
-  token_name         String // e.g., "JANE"
-  token_symbol       String   @unique // 3-10 characters
-  ico_supply         Decimal  @db.Decimal(18, 2) // Total tokens for ICO
-  funding_goal       Decimal? @db.Decimal(18, 2) // Optional funding target in USDC
-  token_pitch        String   @db.Text // Max 1000 chars enforced at app level
-  // System fields
-  status             String   @default("inactive") // "inactive" | "active"
+  creator_handle     String   @unique
+  bio                String   @db.Text
+  profile_picture    String?
+  category           String
+  custom_category    String?
+  engagement_metrics String?  @db.Text
+  token_name         String
+  token_symbol       String   @unique
+  ico_supply         Decimal  @db.Decimal(18, 2)
+  funding_goal       Decimal? @db.Decimal(18, 2)
+  token_pitch        String   @db.Text
+  status             String   @default("inactive")
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
 
@@ -121,9 +205,9 @@ model creator_profiles {
 model creator_applications {
   id                         String    @id @default(uuid())
   user_id                    String
-  state                      String    @default("pending_submission") // "pending_submission" | "under_review" | "kyc_pending" | "approved" | "rejected"
+  state                      String    @default("pending_submission")
   rejection_reason           String?   @db.Text
-  content_ownership_declared Boolean   @default(false) // Checkbox confirmation
+  content_ownership_declared Boolean   @default(false)
   submitted_at               DateTime  @default(now())
   reviewed_at                DateTime?
   approved_at                DateTime?
@@ -136,11 +220,11 @@ model creator_applications {
 }
 
 model creator_documents {
-  id         String   @id @default(uuid()) 
+  id         String   @id @default(uuid())
   user_id    String
-  type       String // "government_id" | "tax" | "residence" | "other"
+  type       String
   file_url   String
-  status     String   @default("pending") // "pending" | "verified" | "rejected"
+  status     String   @default("pending")
   notes      String?  @db.Text
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -155,10 +239,10 @@ model creator_documents {
 model creator_social_links {
   id             String   @id @default(uuid())
   user_id        String
-  platform       String // "youtube" | "tiktok" | "instagram" | "twitter" | "other"
+  platform       String
   handle         String
   url            String
-  follower_count Int? // Optional follower/subscriber count
+  follower_count Int?
   verified       Boolean  @default(false)
   created_at     DateTime @default(now())
 
@@ -171,9 +255,9 @@ model creator_social_links {
 model verification_logs {
   id         String   @id @default(uuid())
   user_id    String
-  action     String // "application_submitted" | "state_changed" | "document_uploaded" | "profile_updated" | etc.
-  actor      String // "system" | "admin" | user_id
-  metadata   Json? // JSON blob for additional context
+  action     String
+  actor      String
+  metadata   Json?
   created_at DateTime @default(now())
 
   user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
