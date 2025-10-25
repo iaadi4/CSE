@@ -52,7 +52,7 @@ model users {
   user_balances        user_balances[]
   transactions         transactions[]
   deposit_addresses    deposit_addresses[]
-  refresh_tokens       refresh_tokens[] // Relation to the new model
+  refresh_token        refresh_token? // Relation to the new model
   creator_profile      creator_profiles?
   creator_applications creator_applications[]
   creator_documents    creator_documents[]
@@ -62,15 +62,15 @@ model users {
   @@map("users")
 }
 
-model refresh_tokens {
+model refresh_token {
   id      String   @id @default(uuid())
-  user_id Int
+  user_id Int      @unique
   token   String   @unique
   expires DateTime
   user    users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
-  @@map("refresh_tokens")
+  @@map("refresh_token")
 }
 
 // ------------------- USER WALLETS -------------------

@@ -43,7 +43,7 @@ class CreatorController {
     try {
       // Check if user already has an application
       const existingApplication = await prisma.creator_applications.findFirst({
-        where: { user_id: userId },
+        where: { user_id: Number(userId) },
       });
 
       if (existingApplication) {
@@ -85,7 +85,7 @@ class CreatorController {
         // Create creator profile
         const profile = await tx.creator_profiles.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             full_name,
             phone_number,
             creator_handle,
@@ -106,7 +106,7 @@ class CreatorController {
         // Create application
         const application = await tx.creator_applications.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             state: "pending_submission",
             content_ownership_declared,
           },
@@ -117,7 +117,7 @@ class CreatorController {
           social_links.map((link: any) =>
             tx.creator_social_links.create({
               data: {
-                user_id: userId,
+                user_id: Number(userId),
                 platform: link.platform,
                 handle: link.handle,
                 url: link.url,
@@ -131,7 +131,7 @@ class CreatorController {
         // Create government ID document
         const governmentIdDoc = await tx.creator_documents.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             type: "government_id",
             file_url: government_id_url,
             status: "pending",
@@ -141,7 +141,7 @@ class CreatorController {
         // Log the action
         await tx.verification_logs.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             action: "application_submitted",
             actor: userId,
             metadata: {
@@ -201,11 +201,11 @@ class CreatorController {
 
       // Users can only view their own applications (unless admin - check role)
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
-      if (application.user_id !== userId && user?.role !== "admin") {
+      if (application.user_id !== Number(userId) && user?.role !== "admin") {
         return Send.forbidden(res, null, "Forbidden");
       }
 
@@ -236,7 +236,7 @@ class CreatorController {
     try {
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
@@ -328,7 +328,7 @@ class CreatorController {
     try {
       // Check if user has a creator profile
       const profile = await prisma.creator_profiles.findUnique({
-        where: { user_id: userId },
+        where: { user_id: Number(userId) },
       });
 
       if (!profile) {
@@ -340,7 +340,7 @@ class CreatorController {
         const existingHandle = await prisma.creator_profiles.findFirst({
           where: {
             creator_handle,
-            user_id: { not: userId },
+            user_id: { not: Number(userId) },
           },
         });
 
@@ -356,7 +356,7 @@ class CreatorController {
       // Update profile
       const updatedProfile = await prisma.$transaction(async (tx) => {
         const updated = await tx.creator_profiles.update({
-          where: { user_id: userId },
+          where: { user_id: Number(userId) },
           data: {
             ...(full_name && { full_name }),
             ...(phone_number !== undefined && { phone_number }),
@@ -375,7 +375,7 @@ class CreatorController {
         // Log the action
         await tx.verification_logs.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             action: "profile_updated",
             actor: userId,
             metadata: req.body,
@@ -408,7 +408,7 @@ class CreatorController {
     try {
       // Check if user has a creator profile
       const profile = await prisma.creator_profiles.findUnique({
-        where: { user_id: userId },
+        where: { user_id: Number(userId) },
       });
 
       if (!profile) {
@@ -418,7 +418,7 @@ class CreatorController {
       // Create social link
       const socialLink = await prisma.creator_social_links.create({
         data: {
-          user_id: userId,
+          user_id: Number(userId),
           platform,
           handle,
           url,
@@ -446,7 +446,7 @@ class CreatorController {
     try {
       // Check if user has a creator application
       const application = await prisma.creator_applications.findFirst({
-        where: { user_id: userId },
+        where: { user_id: Number(userId) },
       });
 
       if (!application) {
@@ -461,7 +461,7 @@ class CreatorController {
       const document = await prisma.$transaction(async (tx) => {
         const doc = await tx.creator_documents.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             type,
             file_url,
             notes,
@@ -472,7 +472,7 @@ class CreatorController {
         // Log the action
         await tx.verification_logs.create({
           data: {
-            user_id: userId,
+            user_id: Number(userId),
             action: "document_uploaded",
             actor: userId,
             metadata: {
@@ -511,7 +511,7 @@ class CreatorController {
     try {
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
@@ -580,7 +580,7 @@ class CreatorController {
 
     try {
       const application = await prisma.creator_applications.findFirst({
-        where: { user_id: userId },
+        where: { user_id: Number(userId) },
         include: {
           user: {
             select: {

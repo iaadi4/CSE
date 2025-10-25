@@ -101,7 +101,7 @@ class AuthController {
             if (userId) {
                 await prisma.users.update({
                     where: { id: userId },
-                    data: { refresh_token: null } 
+                    data: { refresh_tokens: null } 
                 });
             }
 
