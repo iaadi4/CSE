@@ -25,7 +25,7 @@ class AdminController {
 
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
       });
 
       if (user?.role !== "admin") {
@@ -120,7 +120,7 @@ class AdminController {
 
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
       });
 
       if (user?.role !== "admin") {
@@ -215,7 +215,7 @@ class AdminController {
 
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
@@ -301,7 +301,7 @@ class AdminController {
 
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
@@ -381,7 +381,7 @@ class AdminController {
 
       // Check if user is admin
       const user = await prisma.users.findUnique({
-        where: { id: userId },
+        where: { id: Number(userId) },
         select: { role: true },
       });
 
