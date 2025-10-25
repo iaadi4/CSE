@@ -6,6 +6,7 @@ import appConfig from "./config/app.config.js";
 import userRoutes from "./routes/user.routes.js";
 import creatorRoutes from "./routes/creator.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import walletRoutes from "./routes/wallet.routes.js";
 
 class App {
     private app: Express;
@@ -32,6 +33,7 @@ class App {
         this.app.use("/api/user", userRoutes);
         this.app.use("/api/creators", creatorRoutes);
         this.app.use("/api/admin", adminRoutes);
+        this.app.use("/api/wallet", walletRoutes);
     }
 
     public start() {

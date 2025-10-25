@@ -3,12 +3,8 @@ import { prisma } from "../db.js";
 import type { Request, Response } from "express";
 import { deriveBitcoinAddress, deriveEthereumAddress, deriveSolanaAddress } from "../helper/address-derivation.helper.js";
 
-interface AuthRequest extends Request {
-  userId: string;
-}
-
 class WalletController {
-  static createDepositAddress = async(req: AuthRequest, res: Response) => {
+  static createDepositAddress = async(req: Request, res: Response) => {
     try {
       const { userId } = req;
       const { chain, currency } = req.body;
