@@ -40,7 +40,8 @@ enum TransactionStatus {
 // ------------------- USERS -------------------
 
 model users {
-  id            String   @id @default(uuid())
+  id            Int      @id @unique @default(autoincrement())
+  uuid          String   @default(uuid())
   username      String   @unique
   email         String   @unique
   password_hash String
@@ -62,11 +63,11 @@ model users {
 }
 
 model refresh_tokens {
-  id        String   @id @default(uuid())
-  user_id   String
-  token     String   @unique
-  expires   DateTime
-  user      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  id      String   @id @default(uuid())
+  user_id Int
+  token   String   @unique
+  expires DateTime
+  user    users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id])
   @@map("refresh_tokens")
@@ -76,7 +77,7 @@ model refresh_tokens {
 
 model user_wallets {
   id             String   @id @default(uuid())
-  user_id        String
+  user_id        Int
   wallet_address String   @unique
   is_active      Boolean  @default(true)
   created_at     DateTime @default(now())
@@ -93,7 +94,7 @@ model user_wallets {
 // Represents the user's internal, off-chain balance for each currency.
 model user_balances {
   id             String   @id @default(uuid())
-  user_id        String
+  user_id        Int
   currency       Currency
   balance        Decimal  @default(0) @db.Decimal(18, 9)
   locked_balance Decimal  @default(0) @db.Decimal(18, 9)
@@ -110,7 +111,7 @@ model user_balances {
 
 model deposit_addresses {
   id         String   @id @default(uuid())
-  user_id    String
+  user_id    Int
   chain      Chain
   currency   Currency
   address    String   @unique
@@ -130,7 +131,7 @@ model deposit_addresses {
 model transactions {
   id                 String            @id @default(uuid())
   // Denormalized user_id for easier querying of a user's transactions.
-  user_id            String
+  user_id            Int
   wallet_id          String?
   deposit_address_id String?
   type               TransactionType
@@ -171,12 +172,11 @@ model blockchain_events {
   @@map("blockchain_events")
 }
 
-
 // ------------------- CREATOR SCHEMAS -------------------
 
 model creator_profiles {
   id                 String   @id @default(uuid())
-  user_id            String   @unique
+  user_id            Int      @unique
   full_name          String
   phone_number       String?
   creator_handle     String   @unique
@@ -204,7 +204,7 @@ model creator_profiles {
 
 model creator_applications {
   id                         String    @id @default(uuid())
-  user_id                    String
+  user_id                    Int
   state                      String    @default("pending_submission")
   rejection_reason           String?   @db.Text
   content_ownership_declared Boolean   @default(false)
@@ -221,7 +221,7 @@ model creator_applications {
 
 model creator_documents {
   id         String   @id @default(uuid())
-  user_id    String
+  user_id    Int
   type       String
   file_url   String
   status     String   @default("pending")
@@ -238,7 +238,7 @@ model creator_documents {
 
 model creator_social_links {
   id             String   @id @default(uuid())
-  user_id        String
+  user_id        Int
   platform       String
   handle         String
   url            String
@@ -254,7 +254,7 @@ model creator_social_links {
 
 model verification_logs {
   id         String   @id @default(uuid())
-  user_id    String
+  user_id    Int
   action     String
   actor      String
   metadata   Json?
