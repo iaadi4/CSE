@@ -46,13 +46,15 @@ model users {
   email         String   @unique
   password_hash String
   role          UserRole @default(investor)
+  refresh_token        String?
+
   created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   user_wallets         user_wallets[]
   user_balances        user_balances[]
   transactions         transactions[]
   deposit_addresses    deposit_addresses[]
-  refresh_token        refresh_token? // Relation to the new model
   creator_profile      creator_profiles?
   creator_applications creator_applications[]
   creator_documents    creator_documents[]
@@ -60,17 +62,6 @@ model users {
   verification_logs    verification_logs[]
 
   @@map("users")
-}
-
-model refresh_token {
-  id      String   @id @default(uuid())
-  user_id Int      @unique
-  token   String   @unique
-  expires DateTime
-  user    users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@map("refresh_token")
 }
 
 // ------------------- USER WALLETS -------------------
