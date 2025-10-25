@@ -1,0 +1,7 @@
+database_url: "postgresql://user:password@localhost:5432/indexer_db" # Replace with your actual database URL
+
+node:
+  rpc_url_eth: "wss://eth-sepolia.g.alchemy.com/v2/06b_h5PjYEihuWChMfW2-_SIbuYGBwcO" # Replace with your own WebSocket URL
+  rpc_url_sol: "wss://api-mainnet-beta.solana.com" # Replace with your own Solana WebSocket URL
+
+chain_to_index: "ethereum"
