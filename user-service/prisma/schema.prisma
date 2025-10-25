@@ -105,13 +105,14 @@ model deposit_addresses {
   user_id    Int
   chain      Chain
   currency   Currency
-  address    String   @unique
+  address    String?   @unique
   is_active  Boolean  @default(true)
   created_at DateTime @default(now())
 
   user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
   transactions transactions[]
 
+  @@unique([user_id, chain, currency])
   @@index([user_id])
   @@index([chain])
   @@map("deposit_addresses")
