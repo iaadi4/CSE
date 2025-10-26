@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "ethers": "^6.15.0",
+    "prisma": "^6.18.0",
     "yaml": "^2.8.1"
   }
 }

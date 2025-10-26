@@ -4,3 +4,4 @@ dist/
 src/configs/config.yml
 
 .env
+/src/generated/prisma
