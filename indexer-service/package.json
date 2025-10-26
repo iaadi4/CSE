@@ -14,12 +14,12 @@
   "packageManager": "pnpm@10.16.0",
   "devDependencies": {
     "@types/node": "^24.9.1",
-    "@types/yaml": "^1.9.7",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@solana/web3.js": "^1.98.4",
     "ethers": "^6.15.0",
     "prisma": "^6.18.0",
     "yaml": "^2.8.1"

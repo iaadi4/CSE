@@ -1,7 +1,8 @@
 import { config } from './config';
 import { EthereumIndexer } from './indexer/ethereum/client';
+import { SolanaIndexer } from './indexer/solana/client';
 
-let watchList = new Set<string>();
+export let watchList = new Set<string>();
 
 async function main() {
   console.log('Configuration loaded successfully!');
@@ -10,6 +11,9 @@ async function main() {
     if (config.chain_to_index === 'ethereum') {
       const ethIndexer = new EthereumIndexer();
       ethIndexer.start(watchList);
+    } else if(config.chain_to_index === 'solana') {
+      const solIndexer = new SolanaIndexer();
+      solIndexer.start(watchList);
     } else {
       throw new Error(`Indexer for chain "${config.chain_to_index}" is not implemented.`);
     }
