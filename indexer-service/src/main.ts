@@ -1,6 +1,7 @@
 import { config } from './config';
 import { EthereumIndexer } from './indexer/ethereum/client';
 import { SolanaIndexer } from './indexer/solana/client';
+import { BitcoinIndexer } from './indexer/bitcoin/client';
 
 export let watchList = new Set<string>();
 
@@ -8,14 +9,24 @@ async function main() {
   console.log('Configuration loaded successfully!');
 
   try {
-    if (config.chain_to_index === 'ethereum') {
-      const ethIndexer = new EthereumIndexer();
-      ethIndexer.start(watchList);
-    } else if(config.chain_to_index === 'solana') {
-      const solIndexer = new SolanaIndexer();
-      solIndexer.start(watchList);
-    } else {
-      throw new Error(`Indexer for chain "${config.chain_to_index}" is not implemented.`);
+    switch (config.chain_to_index) {
+      case 'ethereum': {
+        const ethIndexer = new EthereumIndexer();
+        await ethIndexer.start(watchList);
+        break;
+      }
+      case 'solana': {
+        const solIndexer = new SolanaIndexer();
+        await solIndexer.start(watchList);
+        break;
+      }
+      case 'bitcoin': {
+        const btcIndexer = new BitcoinIndexer();
+        await btcIndexer.start(watchList);
+        break;
+      }
+      default:
+        throw new Error(`Unsupported chain: ${config.chain_to_index}`);
     }
 
     console.log(`\n✅ Indexer for ${config.chain_to_index.toUpperCase()} is running...`);

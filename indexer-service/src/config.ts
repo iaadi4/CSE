@@ -7,8 +7,11 @@ export interface Config {
   node: {
     rpc_url_eth: string;
     rpc_url_sol: string;
+    rpc_url_btc: string;
+    rpc_user_btc: string;
+    rpc_password_btc: string;
   };
-  chain_to_index: 'ethereum' | 'solana';
+  chain_to_index: 'ethereum' | 'solana' | 'bitcoin';
 }
 
 function loadConfig(): Config {

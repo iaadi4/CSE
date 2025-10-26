@@ -3,5 +3,8 @@ database_url: "postgresql://user:password@localhost:5432/indexer_db" # Replace w
 node:
   rpc_url_eth: "wss://eth-sepolia.g.alchemy.com/v2/06b_h5PjYEihuWChMfW2-_SIbuYGBwcO" # Replace with your own WebSocket URL
   rpc_url_sol: "wss://api-mainnet-beta.solana.com" # Replace with your own Solana WebSocket URL
+  rpc_url_btc: "wss://ws.blockchain.info/inv" # Replace with your own Bitcoin WebSocket URL
+  rpc_user_btc: "your_btc_rpc_username" # Replace with your Bitcoin RPC username
+  rpc_password_btc: "your_btc_rpc_password" # Replace with your Bitcoin RPC
 
 chain_to_index: "ethereum"
