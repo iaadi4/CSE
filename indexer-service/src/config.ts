@@ -12,7 +12,7 @@ export interface Config {
 }
 
 function loadConfig(): Config {
-  const configPath = path.join(process.cwd(), 'configs', 'config.yaml');
+  const configPath = path.join(process.cwd(), 'src', 'configs', 'configs.yml');
 
   try {
     const fileContents = fs.readFileSync(configPath, 'utf8');
@@ -21,7 +21,7 @@ function loadConfig(): Config {
     return config as Config;
   } catch (error) {
     console.error('FATAL: Could not read or parse config.yaml file.');
-    console.error('Please ensure configs/config.yaml exists and is valid.');
+    console.error('Please ensure configs/configs.yaml exists and is valid.');
     console.error('Error details:', error);
     
     process.exit(1);

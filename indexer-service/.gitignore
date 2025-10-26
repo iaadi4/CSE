@@ -1,7 +1,7 @@
 node_modules/
 dist/
 
-src/configs/config.yml
+src/configs/configs.yml
 
 .env
 /src/generated/prisma
