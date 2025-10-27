@@ -14,12 +14,15 @@ pub async fn get_klines(
 
     klines_input.interval = match klines_input.interval.as_str() {
         "1y" | "1Y" => "year".to_string(),
-        "1m" | "1M" => "month".to_string(),
+        "1M" => "month".to_string(),  // Capital M for month
         "1w" | "1W" => "week".to_string(),
         "1d" | "1D" => "day".to_string(),
+        "4h" | "4H" => "hour".to_string(),  // 4 hour intervals -> use hour grouping
         "1h" | "1H" => "hour".to_string(),
-        "1min" | "1MIN" => "minute".to_string(),
-        _ => "week".to_string(),
+        "15m" | "15M" => "minute".to_string(),  // 15 min intervals -> use minute grouping
+        "5m" | "5M" => "minute".to_string(),    // 5 min intervals -> use minute grouping
+        "1m" | "1min" | "1MIN" => "minute".to_string(),
+        _ => "hour".to_string(),  // Default to hour instead of week
     };
 
     println!("Get Klines: {}", klines_input.symbol);

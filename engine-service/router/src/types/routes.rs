@@ -73,6 +73,7 @@ pub struct GetKlinesInput {
     pub symbol: String,
     pub interval: String,
     // #[serde(rename = "startTime")]  // can also use only this line to rename the field
+    #[serde(default)]
     pub start_time: String,
 }
 

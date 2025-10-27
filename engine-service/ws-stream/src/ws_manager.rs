@@ -48,7 +48,8 @@ impl WsManager {
                     return;
                 }
             };
-            let subscription_id = format!("{:?}.{:?}", subscription_type, asset_pair);
+            let subscription_id = format!("{}.{}", subscription_type.to_string(), asset_pair.to_string());
+            println!("User {} subscribing to: {}", user_id, subscription_id);
 
             if let Some(subscriptions) = self.subscriptions.get_mut(user_id) {
                 subscriptions.push(subscription_id.clone());
@@ -81,7 +82,8 @@ impl WsManager {
                     return;
                 }
             };
-            let subscription_id = format!("{:?}.{:?}", subscription_type, asset_pair);
+            let subscription_id = format!("{}.{}", subscription_type.to_string(), asset_pair.to_string());
+            println!("User {} unsubscribing from: {}", user_id, subscription_id);
 
             if let Some(subscriptions) = self.subscriptions.get_mut(user_id) {
                 subscriptions.retain(|id| id != &subscription_id);
@@ -103,18 +105,31 @@ impl WsManager {
 
     // {"data":{"E":1727866324128584,"T":1727866324088922,"U":4977146,"a":[["1.0003","0"]],"b":[],"e":"depth","s":"BTC_USDT","u":4977146},"stream":"depth.BTC_USDT"}
     pub async fn send_to_ws_stream(&mut self, message: String) {
-        let ws_message: WsResponse = serde_json::from_str(message.as_str()).unwrap();
+        let ws_message: WsResponse = match serde_json::from_str(message.as_str()) {
+            Ok(msg) => msg,
+            Err(e) => {
+                eprintln!("Failed to parse WebSocket message: {}", e);
+                return;
+            }
+        };
+
+        println!("Received message for stream: {}", ws_message.stream);
+        println!("Available subscriptions: {:?}", self.reverse_subscriptions.keys().collect::<Vec<_>>());
 
         if let Some(users) = self.reverse_subscriptions.get(ws_message.stream.as_str()) {
+            println!("Forwarding to {} users", users.len());
             for user_id in users {
                 if let Some(user) = self.users.get_mut(user_id) {
                     let user_ws_stream = &mut user.ws_stream;
-                    user_ws_stream
+                    if let Err(e) = user_ws_stream
                         .send(Message::Text(message.clone().into()))
-                        .await
-                        .unwrap();
+                        .await {
+                        eprintln!("Failed to send message to user {}: {}", user_id, e);
+                    }
                 }
             }
+        } else {
+            println!("No users subscribed to stream: {}", ws_message.stream);
         }
     }
 }
