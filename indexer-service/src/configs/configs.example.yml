@@ -8,3 +8,5 @@ node:
   rpc_password_btc: "your_btc_rpc_password" # Replace with your Bitcoin RPC
 
 chain_to_index: "ethereum"
+
+wallet_refresh_interval_ms: 30000

@@ -2,11 +2,19 @@ import { config } from './config';
 import { EthereumIndexer } from './indexer/ethereum/client';
 import { SolanaIndexer } from './indexer/solana/client';
 import { BitcoinIndexer } from './indexer/bitcoin/client';
+import { getDepositWallets } from './db';
 
 export let watchList = new Set<string>();
 
+async function fetchDepositWallets() {
+  const wallets = await getDepositWallets();
+  watchList = new Set(wallets);
+}
+
 async function main() {
   console.log('Configuration loaded successfully!');
+
+  await fetchDepositWallets();
 
   try {
     switch (config.chain_to_index) {
@@ -28,6 +36,9 @@ async function main() {
       default:
         throw new Error(`Unsupported chain: ${config.chain_to_index}`);
     }
+
+    // fetch deposit wallets at regular intervals
+    setInterval(fetchDepositWallets, config.wallet_refresh_interval_ms);
 
     console.log(`\n✅ Indexer for ${config.chain_to_index.toUpperCase()} is running...`);
 

@@ -11,7 +11,8 @@ export interface Config {
     rpc_user_btc: string;
     rpc_password_btc: string;
   };
-  chain_to_index: 'ethereum' | 'solana' | 'bitcoin';
+  chain_to_index: 'ethereum' | 'solana' | 'bitcoin',
+  wallet_refresh_interval_ms: number,
 }
 
 function loadConfig(): Config {
