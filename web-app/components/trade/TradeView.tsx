@@ -22,7 +22,12 @@ const timeOptions = [
   { label: "1D", value: "1d" },
 ];
 
-export const TradeView = ({ market }: { market: string }) => {
+interface TradeViewProps {
+  market: string;
+  onPriceUpdate?: (price: number) => void;
+}
+
+export const TradeView = ({ market, onPriceUpdate }: TradeViewProps) => {
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const chartRef = useRef<HTMLDivElement>(null);
   const chartInstanceRef = useRef<any>(null);
@@ -206,6 +211,11 @@ export const TradeView = ({ market }: { market: string }) => {
       const tradePrice = parseFloat(trade.price);
       const tradeTime = Math.floor(trade.timestamp / 1000);
       
+      // Update parent component with current price
+      if (onPriceUpdate) {
+        onPriceUpdate(tradePrice);
+      }
+      
       // Calculate the start time of the current candle
       const candleStartTime = Math.floor(tradeTime / intervalSeconds) * intervalSeconds;
       
@@ -247,7 +257,7 @@ export const TradeView = ({ market }: { market: string }) => {
         params: [`trade.${market}`],
       });
     };
-  }, [market, selectedInterval]);
+  }, [market, selectedInterval, onPriceUpdate]);
 
   return (
     <div className="h-full bg-zinc-900/30 flex flex-col">

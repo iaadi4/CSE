@@ -6,7 +6,7 @@ import { deriveBitcoinAddress, deriveEthereumAddress, deriveSolanaAddress } from
 class WalletController {
   static createDepositAddress = async(req: Request, res: Response) => {
     try {
-      const { userId } = req;
+      const userId = (req as any).userId;
       const { chain, currency } = req.body;
 
       const depositAddress = await prisma.deposit_addresses.findFirst({

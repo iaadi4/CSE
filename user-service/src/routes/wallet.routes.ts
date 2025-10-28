@@ -1,14 +1,14 @@
-import AuthMiddleware from "@middlewares/auth.middleware.js";
+import AuthMiddleware from "../middlewares/auth.middleware.js";
 import BaseRouter, { type RouteConfig } from "./router.js";
-import ValidationMiddleware from "@middlewares/validation.middleware.js";
-import WalletController from "@controllers/wallet.controller.js";
+import ValidationMiddleware from "../middlewares/validation.middleware.js";
+import WalletController from "../controllers/wallet.controller.js";
 
 class WalletRouter extends BaseRouter {
     protected routes(): RouteConfig[] {
         return [
             {
-                method: "get",
-                path: "/deposit_address",
+                method: "post",
+                path: "/deposit-address",
                 middlewares: [
                     AuthMiddleware.authenticateUser,
                 ],

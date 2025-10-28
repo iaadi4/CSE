@@ -1,11 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Ticker } from "@/lib/types";
 import { getTicker } from "@/lib/httpClient";
 import { SignalingManager } from "@/lib/SignalingManager";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const MarketBar = ({ market }: { market: string }) => {
+  const router = useRouter();
   const [ticker, setTicker] = useState<Ticker | null>(null);
   const [lastTradeDirection, setLastTradeDirection] = useState<'buy' | 'sell' | null>(null);
 
@@ -84,9 +88,17 @@ export const MarketBar = ({ market }: { market: string }) => {
   // Show loading/no data state
   if (ticker === null) {
     return (
-      <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/30 px-6 py-3">
+      <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/30 px-4 py-2">
         <div className="flex items-center gap-3">
-          <h2 className="text-xl font-cabinet-bold text-white">
+          <Button
+            onClick={() => router.push("/market")}
+            variant="ghost"
+            size="sm"
+            className="text-zinc-400 hover:text-white h-8 px-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h2 className="text-lg font-cabinet-bold text-white">
             {market.replace("_", " / ")}
           </h2>
         </div>
@@ -98,22 +110,30 @@ export const MarketBar = ({ market }: { market: string }) => {
   }
 
   return (
-    <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/30 px-6 py-3">
-      {/* Market name */}
+    <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/30 px-4 py-2">
+      {/* Back button and Market name */}
       <div className="flex items-center gap-3">
-        <h2 className="text-xl font-cabinet-bold text-white">
+        <Button
+          onClick={() => router.push("/market")}
+          variant="ghost"
+          size="sm"
+          className="text-zinc-400 hover:text-white h-8 px-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h2 className="text-lg font-cabinet-bold text-white">
           {market.replace("_", " / ")}
         </h2>
         <div className={`w-2 h-2 rounded-full ${isPositive ? "bg-brand-green" : "bg-red-500"}`} />
       </div>
 
       {/* Price info */}
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-6">
         {/* Last Price */}
         <div className="flex flex-col">
           <p className="text-xs text-zinc-400 font-cabinet-medium">Last Price</p>
           <p
-            className={`text-lg font-cabinet-bold transition-colors duration-300 ${lastPriceColor}`}
+            className={`text-base font-cabinet-bold transition-colors duration-300 ${lastPriceColor}`}
           >
             ${ticker?.lastPrice || "—"}
           </p>
