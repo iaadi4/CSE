@@ -93,7 +93,7 @@ model creator_social_links {
 }
 
 model deposit_addresses {
-  id           String         @id
+  id           String         @id @default(uuid())
   user_id      Int
   chain        Chain
   currency     Currency
@@ -109,23 +109,25 @@ model deposit_addresses {
 }
 
 model transactions {
-  id                 String             @id
-  wallet_id          String?
-  amount             Decimal            @db.Decimal(18, 9)
-  created_at         DateTime           @default(now())
-  blockchain_hash    String?
-  confirmations      Int?
-  deposit_address_id String?
-  status             TransactionStatus  @default(pending)
-  updated_at         DateTime
-  user_id            Int
-  type               TransactionType
-  currency           Currency
-  deposit_addresses  deposit_addresses? @relation(fields: [deposit_address_id], references: [id])
-  users              users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  user_wallets       user_wallets?      @relation(fields: [wallet_id], references: [id])
+  id                String            @id
+  wallet_id         String?
+  amount            Decimal           @db.Decimal(18, 9)
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  blockchain_hash   String?
+  confirmations     Int?
+  deposit_address   String
+  user_address      String
+  status            TransactionStatus @default(pending)
+  user_id           Int
+  transactionType              TransactionType
+  currency          Currency
+  chain             Chain
+  deposit_addresses deposit_addresses @relation(fields: [deposit_address], references: [address])
+  users             users             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_wallets      user_wallets?     @relation(fields: [wallet_id], references: [id])
 
-  @@index([deposit_address_id])
+  @@index([deposit_address])
   @@index([user_id])
   @@index([wallet_id])
 }
@@ -197,6 +199,10 @@ enum Chain {
 
 enum Currency {
   USDC
+  SOL
+  ETH
+  BTC
+  USDT
 }
 
 enum TransactionStatus {
