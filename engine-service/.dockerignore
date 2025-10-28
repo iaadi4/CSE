@@ -1,39 +1,15 @@
-# Target directory (build artifacts)
+# Data directories
+docker/postgres-data/
+docker/redis-data/
 target/
-*/target/
+.git/
 
-# Rust backup files
+# Rust specific
 **/*.rs.bk
+Cargo.lock
 
-# IDE files
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
-*.swo
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Git
-.git/
-.gitignore
-
-# Environment files (will be provided at runtime)
-.env.local
-.env.development
-.env.test
-
-# Documentation
-*.md
-
-# Docker files (not needed inside container)
-.dockerignore
-
-# Logs
-*.log
-logs/
-
-# Temporary files
-tmp/
-temp/
+*.swo 
