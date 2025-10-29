@@ -1,0 +1,38 @@
+[
+  {
+    "symbol": "SOL_USDC",
+    "base_asset": "SOL",
+    "quote_asset": "USDC",
+    "min_order_size": "0.001",
+    "max_order_size": "10000",
+    "price_precision": 2,
+    "quantity_precision": 4
+  },
+  {
+    "symbol": "BTC_USDC",
+    "base_asset": "BTC",
+    "quote_asset": "USDC",
+    "min_order_size": "0.0001",
+    "max_order_size": "100",
+    "price_precision": 2,
+    "quantity_precision": 8
+  },
+  {
+    "symbol": "ETH_USDC",
+    "base_asset": "ETH",
+    "quote_asset": "USDC",
+    "min_order_size": "0.001",
+    "max_order_size": "1000",
+    "price_precision": 2,
+    "quantity_precision": 6
+  },
+  {
+    "symbol": "SOL_USDT",
+    "base_asset": "SOL",
+    "quote_asset": "USDT",
+    "min_order_size": "0.001",
+    "max_order_size": "10000",
+    "price_precision": 2,
+    "quantity_precision": 4
+  }
+]

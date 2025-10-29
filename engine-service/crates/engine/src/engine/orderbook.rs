@@ -185,6 +185,28 @@ impl OrderBook {
         self.get_open_orders(user_id)
     }
 
+    pub fn restore_order(&mut self, order: Order) {
+        // Only restore orders that are not fully filled
+        if order.filled_quantity >= order.quantity {
+            return;
+        }
+
+        match order.side {
+            OrderSide::BUY => {
+                self.bids
+                    .entry(order.price)
+                    .and_modify(|orders| orders.push(order.clone()))
+                    .or_insert(vec![order]);
+            }
+            OrderSide::SELL => {
+                self.asks
+                    .entry(order.price)
+                    .and_modify(|orders| orders.push(order.clone()))
+                    .or_insert(vec![order]);
+            }
+        }
+    }
+
     pub fn get_depth(&self) -> (Vec<(Decimal, Decimal)>, Vec<(Decimal, Decimal)>) {
         let mut bids_depth: Vec<(Decimal, Decimal)> = Vec::new();
         let mut asks_depth: Vec<(Decimal, Decimal)> = Vec::new();

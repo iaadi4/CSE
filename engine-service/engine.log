@@ -1,0 +1,536 @@
+nohup: ignoring input
+warning: unused import: `OrderType`
+ --> crates/engine/src/engine/engine.rs:6:51
+  |
+6 |     GetOpenOrders, Order, OrderSide, OrderStatus, OrderType, ProcessOrderResult,
+  |                                                   ^^^^^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+warning: unused variable: `base_asset`
+   --> crates/engine/src/engine/engine.rs:419:13
+    |
+419 |         let base_asset = Asset::from_str(base_asset_str)?;
+    |             ^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_base_asset`
+    |
+    = note: `#[warn(unused_variables)]` on by default
+
+warning: unused variable: `quote_asset`
+   --> crates/engine/src/engine/engine.rs:420:13
+    |
+420 |         let quote_asset = Asset::from_str(quote_asset_str)?;
+    |             ^^^^^^^^^^^ help: if this is intentional, prefix it with an underscore: `_quote_asset`
+
+warning: `engine` (bin "engine") generated 3 warnings (run `cargo fix --bin "engine"` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+     Running `target/debug/engine`
+Redis connected!
+Connected to Postgres - postgresql://postgres:postgres@localhost:5432/usersvc
+Postgres connection pool ready!
+✓ Initialized orderbook for SOL_USDC
+✓ Initialized orderbook for BTC_USDC
+✓ Initialized orderbook for ETH_USDC
+✓ Initialized orderbook for SOL_USDT
+Engine initialized with multiple markets!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6a45bb4b-6943-4203-beec-0ead0d1cac98) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(3892f072-9a4b-456f-b664-e147f5c54b84) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2c07cacf-85c7-4d77-96fd-810c8044819e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e47f5cc6-459c-478c-8804-6571c0c3b77c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(90506ff3-df9e-4957-9f38-3a09bce78fc0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bb42e74f-d739-4b0e-beeb-7b7ad194c9ef) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1e912ee7-ca2d-48aa-a37e-7477d1614822) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b1f28da8-11d4-4852-be6e-c9da37ada9d2) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bfcf48e6-ef5c-4886-99dd-0a052b0f2ab9) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(aea086e2-d909-4bce-857d-47354f977c4c) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(4b17c0b1-ae0b-46e7-9d1e-17dc3c17f28b) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6b07af90-0563-4e80-b27e-4dc1f6991725) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c21e4d4c-9e8c-4824-8abd-976cec9c8896) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ddd99938-f68b-4c28-a998-817d06d68605) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e6648383-22f2-4857-8c6b-a102de4cc4e8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(887f8944-d5bc-4412-b167-8c9cbcad7fb6) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f0008b9a-c0bf-46ec-8004-441064348ead) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1dbaec93-39ba-403b-ac57-2eaecb3d7310) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(02d798a7-88b8-4043-a399-a6e90b3488f0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5ec11b50-7440-4005-936f-45ca104fb8ed) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a54365e6-4691-4548-97ef-3eaa28fca60c) }
+Successfully retrieved open orders!
+Create Order: CreateOrder { market: "SOL_USDC", price: 134.85, quantity: 1.0, side: SELL, order_type: LIMIT, user_id: "2", pubsub_id: Some(75332fb5-8652-49b9-895e-306fad80e920) }
+Current orderbook bids {}
+Current orderbook asks {134.85: [Order { price: 134.85, quantity: 1.0, filled_quantity: 0, order_id: "80750f97-6b38-4bc3-a871-0a520f8889d2", user_id: "2", side: SELL, order_type: LIMIT, order_status: Pending, timestamp: 1761695415254 }]}
+Successfully placed order!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(27c2ae49-e9e7-4151-85b2-3732b910b84e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bb9ae6d4-702b-46f4-93ed-88335959b94c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ae9f607a-7e9b-40d5-8a65-4d9acaae8ebf) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(737377bf-a98b-43e5-9538-689c6700e9b1) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(940c8492-6679-46c5-bf3c-c0f54dd7e559) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(58597a87-12b8-4840-a529-dfb88f2a16da) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c484eb3e-e311-4a0d-b508-37174f4f0988) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d9260296-046b-4c6c-a9d9-d83125dbffcb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f2d0276f-8e58-4c53-8bbe-2aec0a3b3942) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b6f549a3-1618-4d16-8223-8abaa9687605) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4a8f05bd-6b6c-458f-a65c-d12154802e23) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(9f656bbc-c31d-4391-b184-30222d9d2948) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(ab7cccad-fdf4-447e-970e-30fe65492ae6) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(baf10025-7bdb-462b-b53e-7df7bddddc98) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e6b7a1a4-9dcc-46e4-ac09-2a2defb7d32c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ab442d68-f7e6-4738-8514-88fe580d527d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(85b289f9-e2bb-4a0f-92f2-cc246c78a51e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2c1d1957-08e4-4011-8dec-39435128f6ab) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(29a9dd48-ea85-4959-b2b6-19d9211b391f) }
+Successfully retrieved open orders!
+Create Order: CreateOrder { market: "SOL_USDC", price: 134.85, quantity: 1.0, side: BUY, order_type: LIMIT, user_id: "1", pubsub_id: Some(9377a2ba-ff64-459a-8555-9d168c4ba2f1) }
+Current orderbook bids {}
+Current orderbook asks {134.85: []}
+Successfully placed order!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(8feedf9f-76d1-483d-8516-a3dbd7bbb591) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(abce1719-7859-47d1-844e-6dfe4788f9d2) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(3c3615e0-c760-420b-968c-71f6becab349) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a1286efb-5ca5-4ba2-b476-ef732da066c1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(970a1f07-89da-4cb6-9891-5d6828c7e3cd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(edc156fe-ea1c-4cba-937e-2ea9248d8d26) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(89d233a4-ba3c-49f8-9fad-6d19a67676f3) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(08b1c15d-33b3-4b9a-af4d-85be28096ca5) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c3599038-470f-4c88-96e8-35e6b9098f99) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5623fb48-fbcf-4349-9e91-a5f2e5deeb05) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1b9865bf-a2ef-4e67-8ee0-82fad85ec7fd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d7d190ff-847b-4a73-80b4-c2bdfa5dc4cc) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c542bc44-902f-4f1f-8d20-2057cb150582) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(dac109e5-cbe0-4fa3-9802-4e73c599f2d1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c61fc20e-1ff5-4411-81dd-38f1ae38e628) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c038fbb8-1812-4a96-92b2-e186bf8f7f06) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d2ce266a-8ea1-47e6-8cdd-75ba9b75466e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(709ea4f2-7e29-4408-912d-c7103f5c1b10) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b8722767-4681-4b5e-8970-d63910b3003a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(851c101a-51c6-4ee7-b68f-e52b9e1eda2d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6c1685fb-ef91-48ab-af3b-e2199cc067ce) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(02420460-dc23-43ca-89d5-f9b1a9d46fdf) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(45190fae-4308-48e7-b167-45df4e688534) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(43cfdbf1-b84c-4d57-beaf-7758ac2ea002) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(03bf9dfd-6516-4f7f-9fb0-e12e86639d3d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(074fb77b-f31b-4299-9621-f8574afa8e4d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(352ba1e9-3610-48ec-970a-9571c0ba664d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e9a9e3d9-debc-4b10-a49e-af22f235d5a0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(09b67f89-5dbb-4f50-939f-d1170c8687fb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f1c63049-adec-49bd-8d2e-d2203b6bc038) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a9129dba-594b-46a8-9347-c1d024cb5c1c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b1f5bbed-40cb-4fff-96cf-475ec0f1c490) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f869b9d9-eea2-4beb-a8d2-b53d2aeb6982) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4c95562f-f751-435e-aa66-eb9b8e050fbf) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(811eb767-01b9-4c75-99a7-8844941aff7c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e0191411-e483-4fab-b0a9-d63342f0322e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(44288a44-0065-45ec-8d8a-6bdeff3a3e31) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e2c84df5-15ea-4e2b-ab90-42cf2e0c5758) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(80eae997-cf2b-4b43-b009-91e9dc934db2) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2872769e-724e-487b-9a83-96d070152532) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2fbdb103-57fb-4145-ba19-f38163fa7075) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(69daae47-d86d-4d58-b4e4-9d86ba255012) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(9a14c538-64be-4531-a547-4a18bb73cc47) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1683ef88-8605-408a-8c73-c638da9ca8c7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2768b414-ce7c-43f2-a09f-d66460869f78) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(980daac4-7f77-44db-b10b-50808b7ef7d8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4ec4a23e-e1c1-4bcd-91df-317de3f9057c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(8784597a-fcb6-40fc-86d7-e6539402f1c7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(81937a30-5b73-4118-aa5f-9fd80f247e45) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(fa6b0228-447b-41ab-af16-6f7b7af7669b) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(028d5e87-71ce-44b3-b2a0-f24a8164b0a1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0e4d9443-17d6-4fa0-bd05-71011513765d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(64200be8-b4e8-4712-ad18-ab22472c2db0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(7d6e4ac2-d099-49a0-ae8c-294bd3f8ca0b) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(170adc5a-949a-4387-9530-a68adf4e7645) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2193af75-9aa9-4266-8cca-e31d2e7b7350) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bde7c0b8-3dca-41f7-a5bb-587081b0c8c9) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e9d36f54-d1fb-45c4-bcd0-5f9e205ea2bd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a829d891-9382-4997-b3fc-9303a2125419) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(96eb8070-9b21-4067-a5bb-0c3dcb70d24e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4292c353-616b-4ed1-953c-049ea1e4699d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e6ff6236-fdff-4022-b214-2fd3fa8f39ce) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(fb10cf65-7d45-4af8-abd2-7f2427e0dc67) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(64a498eb-5de6-4533-89e3-9bcb27ffdab0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(fe16bfe0-c8a3-4a3d-9fd7-628e95954f60) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5082b5a7-8246-402e-8640-5e1ea4773968) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(50a08d87-b382-48ee-9b3a-6ab71e2960fc) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(03988830-05b9-4d95-a4ed-dd2ca69cbc1c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(66e08e1d-83a4-4276-b1d9-636f956f59ec) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f32509fb-02d1-4249-b986-da03a258d1b0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(84935ed9-d4dd-4f30-bb4b-05072e7ac2df) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6c014d1a-2198-482b-8856-6aaf2e60978e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(8566705c-149c-4eff-b17f-45d75622f5e4) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f5debc9b-3ec0-45f7-87e7-1b3cd8b9012c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(280f81b3-9c93-440c-8f22-8aeb08ef2259) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f77cebcc-373c-459b-9794-2301b1b0bcbb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(34923043-0ede-40c6-8284-14766af2f5bf) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(371e610e-90e5-4d1f-9e2b-90b9923ba0b7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(49e94d50-908f-4262-8f12-415a883c4f47) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5271c728-2eab-43da-9a71-b2bfe349a004) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b69091df-d8c2-4094-b3ac-c44f828d6a6f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(567462d7-c63c-49f0-ac8d-fd347833994f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e67681e7-4403-46de-8ccd-06a418b13a01) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2ae9ca13-7b42-4dee-92a5-c5614d89346c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(fc77c952-4169-44ee-a117-d9c597981671) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(23173de8-ada8-4250-9e50-52868dca6f59) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0e5266f3-d5b0-4d84-95b8-a6625e6f5306) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bab0ef1c-af93-4f57-ade0-bf124be08c69) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(515bda20-9476-48dd-bdfe-66bf8607495f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f5489d31-eaae-441e-915f-ab9b6ff8d9eb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(65d0d6d7-db01-4d38-9dc3-d824397ff5fb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(82087028-ec51-4fec-9fbb-b923ee92d73f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b464492c-f4b2-4d41-9b24-10868b18e7eb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(72bbfd06-b643-4bb3-a721-3087131e8aaa) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(06aeaf40-a5de-4129-98e3-98a71a798f2a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a502ea2f-850c-41df-b76a-c42073b89449) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(3344c8ef-55b4-47dc-8ee4-dfd7099caf98) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(64678c9c-6d17-4495-a967-6bca2306fb6a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0e389a62-dff2-4ced-a326-fa63107d512c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6a94c41e-ea73-4560-ab9a-85a7c9c38dd1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d4203d87-b534-4276-8800-1367b18415de) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e0bf3ad2-299a-45e8-bf50-d0842fa3d60f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(dea5f60e-8062-430b-a58e-e6d909c99d7b) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c483622c-4310-4547-b804-e17c99628c5f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4fb042ab-be09-41fb-b82a-c42017fb9d7c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "2", market: "SOL_USDC", pubsub_id: Some(87fd47a7-86fc-4dff-b767-c11f57ed5223) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2a12df9f-762c-4355-b834-abf81e53be6c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(80126b23-0b08-42cc-8690-a7d5401d6e15) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4f58cecd-b5d8-4b1c-a94f-5ace9ffeb1ea) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e0322341-66bf-49d1-89b6-540c1ca142d6) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(fe33f3be-6557-47e5-a501-dc0dbd521f8f) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(83620595-0d06-44b1-9eae-fde3550a229b) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(41081624-cebe-439e-8ac3-1d9876b8dc34) }
+Successfully retrieved open orders!
+Create Order: CreateOrder { market: "SOL_USDC", price: 150.0, quantity: 0.5, side: SELL, order_type: LIMIT, user_id: "2", pubsub_id: Some(e154f7df-9b0d-4e6b-8200-aa2d319b7d21) }
+Current orderbook bids {}
+Current orderbook asks {134.85: [], 150.0: [Order { price: 150.0, quantity: 0.5, filled_quantity: 0, order_id: "aa7ee702-4955-45df-b665-3b8f00bc0324", user_id: "2", side: SELL, order_type: LIMIT, order_status: Pending, timestamp: 1761696235885 }]}
+Successfully placed order!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(756ff10b-f925-4f09-9097-b6f0839021c5) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(dfcefad1-cfca-4583-8635-8b78ffc87502) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(9409338c-c73c-4c16-aa88-72fea3ab3cb4) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(daf2d4b0-7ca1-468b-9dc6-94147fe62dc9) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a5c65c8b-d0c5-4325-a885-56710fe771d8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(82b6cbeb-108a-423f-a090-b95d79def8f1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(63825f9d-56ad-4360-ac74-e30aaeb32aa0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e28560b1-54be-470d-9047-c53d4510ae59) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a2d04003-e3ea-4573-8285-f8efbdd35385) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b85175a4-b496-437a-ade6-2e15da5f7ef4) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d63eeaae-a737-486a-bce8-d115658d44cb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(da61dffb-81ef-4937-84a6-0f15bcfb33db) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e585ee66-511c-49a3-bbd7-2538c1d0a40f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4c378531-0675-4997-863b-921900857108) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f34316a5-8fd6-435b-9c7b-d867ccaa6cde) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d334e587-f73c-463d-ac2d-80f6c1c93ba8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2d19846b-4e1f-43c1-b63c-ac93a449eb5b) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(42a2a3d9-edb9-493b-9589-2ce53fe6e858) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5906d46d-6920-4202-92a6-b5fae120813a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4fd5ab0d-8a87-4896-93e2-6d27f65926cd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(80ee6224-04d9-43e7-9a70-a67fa0f1c53a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6b2aac80-a5ad-47f6-91b6-de6492ef5312) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c494b64a-48cf-4c0f-98ac-5516f8f0bc08) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(9fcf1065-ddc4-42bc-a8ba-9a3df8b839a8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1f1beeb8-006b-4856-b922-6c481b882895) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a3f4d1b4-083c-447f-91c4-298e74545ff7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(11dbc965-fa82-4fbb-ac85-9b98c2ce850a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6bb89529-58aa-40e8-8766-72b1a79d2d17) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(decc5ed1-4dcf-42ff-8750-ea671969a985) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a757a00f-ef12-414d-b2a2-28fc76f44348) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(745e2009-ba62-43b5-b2c9-428f871556dd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(25e5dd39-867b-4e8c-9976-c3232ae06868) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(b00d5ca6-fcfd-4984-97cc-e488f5494d4d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(025228f6-6c5f-4bca-a976-288c7fbed216) }
+Successfully retrieved open orders!
+Get Depth: GetDepth { symbol: "SOL_USDC", pubsub_id: Some(fa67f940-578c-41e0-aeb3-6fb75ddaa4a2) }
+Successfully retrieved depth!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(de8c4721-50ec-4d8a-ab22-05bfce64a034) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(12931272-8319-43ba-8ddb-9814f11ffdcd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ac7d7feb-2162-4a56-b02c-a512b2903e75) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c8f1b143-ef80-40e2-940f-251d41a8ecca) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(cf2f7710-2d0b-43f9-be75-fed62059a90f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(869e22a7-eb78-4b28-96d1-10cf668f8d4c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c7a09e27-e9fc-4451-ac5a-5c4f22f6268a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(424c473f-0db7-4a3f-a433-b1c64349c38a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ff5086ed-35f1-4c0f-a64d-0eebef42bd8d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(284ec022-29ea-449a-bee9-65b2c367b987) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a99a4fcc-8aca-45be-a30d-a4373cd0bda6) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(571bf74b-765b-4539-97aa-42b89bade672) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(5a19eb7f-2bda-4c7f-85a8-7cf0a595d57d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2aea1a32-40b0-4f46-b0a4-22a21e50b741) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(9b20ef3d-f5be-4e86-97d2-d0089b70fde5) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1b6d64a6-f023-4c54-84c9-ed0baa019bb2) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(7f8fae23-0522-465d-aac0-390b04031ee9) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(25e7328a-9ed8-404d-9fc3-1b3a5089dffb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0661e78f-bf9a-4b23-aeea-3810602f85b1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(924669a3-5ac8-43f8-8532-847e533e5555) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2bd27c3d-b141-4d05-8422-3ed0a767fb4a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(705f46ed-587e-4ac8-8640-e540cfbe40bf) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0db8c4e9-f3ca-4e95-bf8a-f667580819cd) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6e95d799-0f9a-46ca-9c4d-89f8877ee5a8) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a6f0c734-aa66-4b8e-9203-c23f16b1e0a9) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(0e9e5960-22cc-4f95-a3fa-a030293b27ae) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(05ccdbc2-516f-4553-93c0-e17b1a88d3cb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(7fe20a67-c16d-4f48-80ee-6d3256744548) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(ef51728e-76f6-4e98-b416-6fd1b1ef2de7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(2c603c32-94b2-4572-86eb-7600b362dd92) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a204a586-43c6-4173-8497-da391be156f7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6c40ec19-828b-4c49-921f-5d3a8010459f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(36228b32-b230-4144-9697-5f902fcaa85c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(895953c9-4e9a-404b-94e5-8769c5a4bd3a) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(f6771dbb-bc67-4d76-bdbe-51d586731309) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(3856c38d-0071-4477-9182-451d946c34f3) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(7d7cbb04-665a-4c51-90d5-fc04732c1d66) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1c08cb59-595c-4d77-bda7-c2491af80067) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(4c671312-52e7-47fe-a878-671f3d61b0f9) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c8b7f4a9-5174-416a-abb1-70d058ffc3d5) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(bcec3a0d-4598-4917-bc4e-06d54db66a4c) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(88e47bc1-38dd-4977-ae50-20b84f440d5d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(6c15a956-8c57-4ec9-83ae-f884e0137160) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(81369184-0860-411c-9979-536f7a149bc0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(1962dde3-6dcb-425e-bc77-83a474f388a1) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(caa1b02d-f103-49e3-9dca-8a7cd27d898d) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(54c70857-b6c9-4244-91f1-9928b648adb5) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(8278f934-66c2-44fa-92fd-442b61784a42) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a40f5c50-ee64-43ac-9d38-2bfaf9a3637f) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(a4bd66ef-390c-4a06-86f9-4ac2cdf05657) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(58e96d71-cb6d-4404-9501-a995c66122eb) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(abaca9dc-f299-4171-940f-c49bb579f359) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c0980080-08fa-41ea-a932-ae7163acb004) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(d2573700-a4c5-4e38-9fc5-874d677d49f0) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(c7e2ec01-9f5e-4b02-a6b6-f1918f68bb4e) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(79c57b07-9b57-4258-8e0e-bd588334a7a7) }
+Successfully retrieved open orders!
+Open Order: GetOpenOrders { user_id: "1", market: "SOL_USDC", pubsub_id: Some(e00a4bc3-20d3-4c82-a38a-611b4b6ba9f2) }
+Successfully retrieved open orders!

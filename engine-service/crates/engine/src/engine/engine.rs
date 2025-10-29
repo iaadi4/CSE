@@ -5,9 +5,11 @@ use crate::types::engine::{
     Asset, AssetPair, CancelAllOrders, CancelOrder, CreateOrder, GetDepth, GetOpenOrder,
     GetOpenOrders, Order, OrderSide, OrderStatus, OrderType, ProcessOrderResult,
 };
-use db_processor::query::get_latest_trade_id_from_db;
+use crate::user_service::UserServiceClient;
+use db_processor::query::{get_latest_trade_id_from_db, get_orders_from_db};
 use redis::RedisManager;
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 use rust_decimal_macros::dec;
 use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
@@ -31,10 +33,11 @@ pub struct UserBalances {
     balance: HashMap<Asset, Amount>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Engine {
     pub orderbooks: Vec<OrderBook>,
     pub balances: HashMap<String, Mutex<UserBalances>>,
+    pub user_service_client: UserServiceClient,
 }
 
 impl Engine {
@@ -42,22 +45,72 @@ impl Engine {
         Engine {
             orderbooks: vec![],
             balances: HashMap::new(),
+            user_service_client: UserServiceClient::new(),
         }
     }
 
     pub async fn init_engine(&mut self, pool: &Pool<Postgres>) {
-        let market = "SOL_USDC".to_string();
-        let trade_id: i64 = get_latest_trade_id_from_db(pool, market).await.unwrap();
+        // Load markets from configuration
+        let markets_config = vec![
+            ("SOL_USDC", Asset::SOL, Asset::USDC),
+            ("BTC_USDC", Asset::BTC, Asset::USDC),
+            ("ETH_USDC", Asset::ETH, Asset::USDC),
+            ("SOL_USDT", Asset::SOL, Asset::USDT),
+        ];
 
-        let orderbook = OrderBook::new(
-            AssetPair {
-                base: Asset::SOL,
-                quote: Asset::USDC,
-            },
-            trade_id + 1,
-        );
+        for (market_symbol, base, quote) in markets_config {
+            let trade_id: i64 = get_latest_trade_id_from_db(pool, market_symbol.to_string())
+                .await
+                .unwrap_or(0);
 
-        self.orderbooks.push(orderbook);
+            let orderbook = OrderBook::new(
+                AssetPair { base, quote },
+                trade_id + 1,
+            );
+
+            self.orderbooks.push(orderbook);
+            println!("✓ Initialized orderbook for {}", market_symbol);
+        }
+
+        // Load existing orders from database
+        for orderbook in &mut self.orderbooks {
+            let market_symbol = orderbook.ticker();
+            match get_orders_from_db(pool, market_symbol.to_string()).await {
+                Ok(orders) => {
+                    for db_order in &orders {
+                        // Convert DbOrder to Order
+                        let order = Order {
+                            price: db_order.price,
+                            quantity: db_order.quantity,
+                            filled_quantity: db_order.filled_quantity,
+                            order_id: db_order.order_id.clone(),
+                            user_id: db_order.user_id.clone(),
+                            side: match db_order.side.as_str() {
+                                "BUY" => OrderSide::BUY,
+                                "SELL" => OrderSide::SELL,
+                                _ => continue, // Skip invalid orders
+                            },
+                            order_type: match db_order.order_type.as_str() {
+                                "LIMIT" => OrderType::LIMIT,
+                                "MARKET" => OrderType::MARKET,
+                                _ => continue, // Skip invalid orders
+                            },
+                            order_status: match db_order.order_status.as_str() {
+                                "Pending" => OrderStatus::Pending,
+                                "PartiallyFilled" => OrderStatus::PartiallyFilled,
+                                _ => continue, // Skip invalid orders
+                            },
+                            timestamp: db_order.timestamp,
+                        };
+
+                        // Add order to orderbook
+                        let _ = orderbook.restore_order(order);
+                    }
+                    println!("✓ Loaded {} orders for {}", orders.len(), market_symbol);
+                }
+                Err(e) => println!("Failed to load orders for {}: {:?}", market_symbol, e),
+            }
+        }
     }
 
     pub fn init_user_balance(&mut self, user_id: &str) {
@@ -97,7 +150,7 @@ impl Engine {
         input_order: CreateOrder,
         redis_conn: &RedisManager,
     ) -> Result<String, &str> {
-        let funds_check = self.check_and_lock_funds(&input_order);
+        let funds_check = self.check_and_lock_funds(&input_order).await;
 
         if funds_check.is_err() {
             return Err("Funds check failed");
@@ -129,8 +182,8 @@ impl Engine {
             filled_quantity: dec!(0),
             order_id: order_id.clone(),
             user_id: input_order.user_id.clone(),
-            side: input_order.side,
-            order_type: OrderType::MARKET,
+            side: input_order.side.clone(),
+            order_type: input_order.order_type.clone(),
             order_status: OrderStatus::Pending,
             timestamp: chrono::Utc::now().timestamp_millis(),
         };
@@ -139,10 +192,12 @@ impl Engine {
         println!("Current orderbook bids {:?}", orderbook.bids);
         println!("Current orderbook asks {:?}", orderbook.asks);
 
-        let _ = self.update_user_balance(base_asset, quote_asset, order.clone(), &order_result);
+        // Balance updates moved to db-processor after trade confirmation
+        // let _ = self.update_user_balance(base_asset, quote_asset, order.clone(), &order_result).await;
         let _ = self
             .update_db_orders(
                 order.clone(),
+                input_order.market.clone(),
                 order_result.executed_quantity,
                 &order_result.fills,
                 redis_conn,
@@ -153,6 +208,9 @@ impl Engine {
             .create_db_trades(
                 input_order.user_id.clone(),
                 input_order.market.clone(),
+                input_order.side.clone(),
+                base_asset.to_string(),
+                quote_asset.to_string(),
                 &order_result.fills,
                 redis_conn,
             )
@@ -397,51 +455,51 @@ impl Engine {
         depth
     }
 
-    pub fn check_and_lock_funds(&mut self, order: &CreateOrder) -> Result<(), &str> {
+    pub async fn check_and_lock_funds(&mut self, order: &CreateOrder) -> Result<(), &str> {
         let assets: Vec<&str> = order.market.split('_').collect();
         let base_asset_str = assets[0];
         let quote_asset_str = assets[1];
 
         // Convert string assets to Asset enum
-        let base_asset = Asset::from_str(base_asset_str)?;
-        let quote_asset = Asset::from_str(quote_asset_str)?;
+        let _base_asset = Asset::from_str(base_asset_str)?;
+        let _quote_asset = Asset::from_str(quote_asset_str)?;
 
         let user_id = &order.user_id;
 
-        let user_balance_mutex = self
-            .balances
-            .get_mut(user_id)
-            .ok_or("No matching user found")?;
-
-        // Lock the Mutex to safely access the user's balances
-        let mut user_balance = user_balance_mutex.lock().map_err(|_| "Mutex lock failed")?;
-
         match order.side {
             OrderSide::BUY => {
-                let balance = user_balance
-                    .balance
-                    .get_mut(&quote_asset)
-                    .ok_or("No balance for asset found")?;
+                // For buy orders, check if user has enough quote asset (e.g., USDC)
+                let balance_info = self.user_service_client
+                    .get_balance(user_id, quote_asset_str)
+                    .await
+                    .map_err(|_| "Failed to get balance from user service")?;
 
-                let total_cost = order.price * order.quantity;
-                if balance.available >= total_cost {
-                    balance.available -= total_cost;
-                    balance.locked += total_cost;
+                let total_cost = (order.price * order.quantity).to_f64().unwrap();
+                if balance_info.available >= total_cost {
+                    // Lock the funds in user service
+                    self.user_service_client
+                        .lock_funds(user_id, quote_asset_str, total_cost)
+                        .await
+                        .map_err(|_| "Failed to lock funds in user service")?;
                 } else {
                     return Err("Insufficient funds");
                 }
             }
 
             OrderSide::SELL => {
-                // User must have order.quantity of base_asset
-                let balance = user_balance
-                    .balance
-                    .get_mut(&base_asset)
-                    .ok_or("No balance for asset found")?;
+                // For sell orders, check if user has enough base asset (e.g., SOL)
+                let balance_info = self.user_service_client
+                    .get_balance(user_id, base_asset_str)
+                    .await
+                    .map_err(|_| "Failed to get balance from user service")?;
 
-                if balance.available >= order.quantity {
-                    balance.available -= order.quantity;
-                    balance.locked += order.quantity;
+                let quantity = order.quantity.to_f64().unwrap();
+                if balance_info.available >= quantity {
+                    // Lock the funds in user service
+                    self.user_service_client
+                        .lock_funds(user_id, base_asset_str, quantity)
+                        .await
+                        .map_err(|_| "Failed to lock funds in user service")?;
                 } else {
                     return Err("Insufficient asset quantity");
                 }
@@ -451,77 +509,75 @@ impl Engine {
         Ok(())
     }
 
-    pub fn update_user_balance(
+    pub async fn update_user_balance(
         &mut self,
         base_asset: Asset,
         quote_asset: Asset,
         order: Order,
         order_result: &ProcessOrderResult,
     ) -> Result<(), &str> {
+        let base_asset_str = base_asset.to_string();
+        let quote_asset_str = quote_asset.to_string();
+
         match order.side {
             OrderSide::BUY => {
                 for fill in &order_result.fills {
-                    // Update buyer's balances (current user)
-                    self.update_balance_with_lock(
-                        order.user_id.clone(),
-                        base_asset.clone(),
-                        fill.quantity,
-                        AmountType::AVAILABLE,
-                    )?;
-                    self.update_balance_with_lock(
-                        order.user_id.clone(),
-                        quote_asset.clone(),
-                        -(fill.price * fill.quantity),
-                        AmountType::LOCKED,
-                    )?;
+                    let quantity = fill.quantity.to_f64().unwrap();
+                    let total_price = (fill.price * fill.quantity).to_f64().unwrap();
 
-                    // Update seller's balances (other user)
-                    self.update_balance_with_lock(
-                        fill.other_user_id.clone(),
-                        quote_asset.clone(),
-                        fill.price * fill.quantity,
-                        AmountType::AVAILABLE,
-                    )?;
-                    self.update_balance_with_lock(
-                        fill.other_user_id.clone(),
-                        base_asset.clone(),
-                        -fill.quantity,
-                        AmountType::LOCKED,
-                    )?;
+                    // Update buyer's balances (current user) - unlock quote asset and add base asset
+                    self.user_service_client
+                        .unlock_funds(&order.user_id, &quote_asset_str, total_price)
+                        .await
+                        .map_err(|_| "Failed to unlock buyer funds")?;
+
+                    self.user_service_client
+                        .update_balance(&order.user_id, &base_asset_str, quantity, "add")
+                        .await
+                        .map_err(|_| "Failed to update buyer balance")?;
+
+                    // Update seller's balances (other user) - unlock base asset and add quote asset
+                    self.user_service_client
+                        .unlock_funds(&fill.other_user_id, &base_asset_str, quantity)
+                        .await
+                        .map_err(|_| "Failed to unlock seller funds")?;
+
+                    self.user_service_client
+                        .update_balance(&fill.other_user_id, &quote_asset_str, total_price, "add")
+                        .await
+                        .map_err(|_| "Failed to update seller balance")?;
                 }
             }
             OrderSide::SELL => {
                 for fill in &order_result.fills {
-                    // Update seller's balances (current user)
-                    self.update_balance_with_lock(
-                        order.user_id.clone(),
-                        base_asset.clone(),
-                        -fill.quantity,
-                        AmountType::LOCKED,
-                    )?;
-                    self.update_balance_with_lock(
-                        order.user_id.clone(),
-                        quote_asset.clone(),
-                        fill.price * fill.quantity,
-                        AmountType::AVAILABLE,
-                    )?;
+                    let quantity = fill.quantity.to_f64().unwrap();
+                    let total_price = (fill.price * fill.quantity).to_f64().unwrap();
 
-                    // Update buyer's balances (other user)
-                    self.update_balance_with_lock(
-                        fill.other_user_id.clone(),
-                        base_asset.clone(),
-                        fill.quantity,
-                        AmountType::AVAILABLE,
-                    )?;
-                    self.update_balance_with_lock(
-                        fill.other_user_id.clone(),
-                        quote_asset.clone(),
-                        -(fill.price * fill.quantity),
-                        AmountType::LOCKED,
-                    )?;
+                    // Update seller's balances (current user) - unlock base asset and add quote asset
+                    self.user_service_client
+                        .unlock_funds(&order.user_id, &base_asset_str, quantity)
+                        .await
+                        .map_err(|_| "Failed to unlock seller funds")?;
+
+                    self.user_service_client
+                        .update_balance(&order.user_id, &quote_asset_str, total_price, "add")
+                        .await
+                        .map_err(|_| "Failed to update seller balance")?;
+
+                    // Update buyer's balances (other user) - unlock quote asset and add base asset
+                    self.user_service_client
+                        .unlock_funds(&fill.other_user_id, &quote_asset_str, total_price)
+                        .await
+                        .map_err(|_| "Failed to unlock buyer funds")?;
+
+                    self.user_service_client
+                        .update_balance(&fill.other_user_id, &base_asset_str, quantity, "add")
+                        .await
+                        .map_err(|_| "Failed to update buyer balance")?;
                 }
             }
         }
+
         Ok(())
     }
 

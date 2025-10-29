@@ -7,6 +7,9 @@ pub mod types;
 
 #[tokio::main]
 async fn main() {
+    // Load environment variables from .env file
+    dotenvy::dotenv().ok();
+
     let redis_connection = RedisManager::new().await.unwrap();
     println!("Redis connected!");
 

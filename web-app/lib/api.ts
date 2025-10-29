@@ -1,6 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
 
 export interface ApiResponse<T = any> {
   ok: boolean;
@@ -212,6 +212,30 @@ export const AdminApi = {
 
   updateApplicationState: (id: string, state: string) =>
     apiClient.patch<ApiResponse<any>>(`/api/admin/creator-applications/${id}/state`, { state }),
+};
+
+export interface Balance {
+  currency: string;
+  available: number;
+  locked: number;
+  total: number;
+}
+
+export const BalanceApi = {
+  getBalances: () =>
+    apiClient.get<ApiResponse<{ balances: Record<string, { available: number; locked: number }> }>>("/api/balance"),
+
+  getBalance: (currency: string) =>
+    apiClient.get<ApiResponse<Balance>>(`/api/balance/${currency}`),
+
+  lockFunds: (currency: string, amount: number) =>
+    apiClient.post<ApiResponse<any>>("/api/balance/lock", { currency, amount }),
+
+  unlockFunds: (currency: string, amount: number) =>
+    apiClient.post<ApiResponse<any>>("/api/balance/unlock", { currency, amount }),
+
+  updateBalance: (currency: string, amount: number, operation: "add" | "subtract") =>
+    apiClient.post<ApiResponse<any>>("/api/balance/update", { currency, amount, operation }),
 };
 
 // Export legacy ApiClient for backward compatibility (will be removed)

@@ -11,6 +11,18 @@ pub enum Asset {
     SOL,
 }
 
+impl std::fmt::Display for Asset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Asset::USDC => write!(f, "USDC"),
+            Asset::USDT => write!(f, "USDT"),
+            Asset::BTC => write!(f, "BTC"),
+            Asset::ETH => write!(f, "ETH"),
+            Asset::SOL => write!(f, "SOL"),
+        }
+    }
+}
+
 impl Asset {
     pub fn from_str(asset_str: &str) -> Result<Asset, &'static str> {
         // static lifetime because Err str slice is static
@@ -85,6 +97,7 @@ pub struct CreateOrder {
     pub price: Decimal,
     pub quantity: Decimal,
     pub side: OrderSide,
+    pub order_type: OrderType,
     pub user_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>,

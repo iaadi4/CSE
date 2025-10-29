@@ -54,6 +54,7 @@ export const OrderForm = ({ market, currentPrice = 0 }: OrderFormProps) => {
         price: orderType === "market" ? currentPrice.toFixed(2) : price,
         quantity,
         side,
+        order_type: orderType.toUpperCase() as "LIMIT" | "MARKET",
         user_id: user.id.toString(),
       };
 

@@ -139,11 +139,13 @@ export const TradeView = ({ market, onPriceUpdate }: TradeViewProps) => {
       // Set data
       const formattedData = klineData
         .map((kline) => {
-          const time = parseInt(kline.end) / 1000;
           const open = parseFloat(kline.open);
           const high = parseFloat(kline.high);
           const low = parseFloat(kline.low);
           const close = parseFloat(kline.close);
+          
+          // Convert date string to timestamp
+          const time = new Date(kline.end).getTime() / 1000;
           
           // Skip invalid data
           if (isNaN(time) || time <= 0 || isNaN(open) || isNaN(high) || isNaN(low) || isNaN(close)) {

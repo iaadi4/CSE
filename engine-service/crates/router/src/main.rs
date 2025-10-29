@@ -36,9 +36,11 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(
                 Cors::default()
-                    .allow_any_origin()
+                    .allowed_origin("http://localhost:3000")
+                    .allowed_origin("http://localhost:8082")
                     .allow_any_header()
                     .allow_any_method()
+                    .supports_credentials()
                     .max_age(3600),
             )
             .service(
@@ -58,7 +60,7 @@ async fn main() -> std::io::Result<()> {
                     )
                     .service(
                         web::scope("/orders")
-                            .route("", web::get().to(order::get_open_orders)) // GET /orders
+                            .route("", web::post().to(order::get_open_orders)) // POST /orders
                             .route("", web::delete().to(order::cancel_all_orders)), // DELETE /orders
                     ),
             )

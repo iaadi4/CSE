@@ -9,40 +9,47 @@ pub enum OrderSide {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum OrderType {
+    LIMIT,
+    MARKET,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateOrderInput {
-    market: String,
-    price: Decimal,
-    quantity: Decimal,
-    side: OrderSide,
-    user_id: String,
+    pub market: String,
+    pub price: Decimal,
+    pub quantity: Decimal,
+    pub side: OrderSide,
+    pub order_type: OrderType,
+    pub user_id: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetOpenOrderInput {
-    user_id: String,
-    order_id: String,
-    market: String,
+    pub user_id: String,
+    pub order_id: String,
+    pub market: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CancelOrderInput {
-    order_id: String,
-    user_id: String,
-    price: Decimal,
-    side: OrderSide,
-    market: String,
+    pub order_id: String,
+    pub user_id: String,
+    pub price: Decimal,
+    pub side: OrderSide,
+    pub market: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GetOpenOrdersInput {
-    user_id: String,
-    market: String,
+    pub user_id: String,
+    pub market: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pubsub_id: Option<Uuid>,
 }

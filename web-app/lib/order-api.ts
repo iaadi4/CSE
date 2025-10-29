@@ -9,6 +9,7 @@ export interface CreateOrderRequest {
   price: string;
   quantity: string;
   side: OrderSide;
+  order_type: "LIMIT" | "MARKET";
   user_id: string;
 }
 
@@ -74,9 +75,7 @@ export const OrderApi = {
    */
   getOpenOrders: async (request: GetOpenOrdersRequest): Promise<Order[]> => {
     try {
-      const response = await orderApiClient.get("/orders", {
-        params: request,
-      });
+      const response = await orderApiClient.post("/orders", request);
       return response.data;
     } catch (error) {
       console.error("Error fetching open orders:", error);

@@ -1,4 +1,4 @@
-use crate::types::{DbTrade, KlineData, TickerData};
+use crate::types::{DbOrder, DbTrade, KlineData, TickerData};
 use chrono::{DateTime, Duration, Utc};
 use rust_decimal::Decimal;
 use sqlx::{Pool, Postgres};
@@ -17,6 +17,31 @@ pub async fn insert_trade(pool: &Pool<Postgres>, trade: DbTrade) -> Result<(), s
     .bind(trade.other_user_id)
     .bind(trade.order_id)
     .bind(trade.timestamp)
+    .execute(pool)
+    .await?;
+
+    Ok(())
+}
+
+pub async fn insert_order(pool: &Pool<Postgres>, order: DbOrder) -> Result<(), sqlx::Error> {
+    sqlx::query(
+        "INSERT INTO orders(
+          order_id, market, price, quantity, filled_quantity, user_id, side, order_type, order_status, timestamp
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      ON CONFLICT (order_id) DO UPDATE SET
+        filled_quantity = EXCLUDED.filled_quantity,
+        order_status = EXCLUDED.order_status",
+    )
+    .bind(order.order_id)
+    .bind(order.market)
+    .bind(order.price)
+    .bind(order.quantity)
+    .bind(order.filled_quantity)
+    .bind(order.user_id)
+    .bind(order.side)
+    .bind(order.order_type)
+    .bind(order.order_status)
+    .bind(order.timestamp)
     .execute(pool)
     .await?;
 
@@ -45,6 +70,9 @@ pub async fn get_trades_from_db(
             other_user_id: trade.other_user_id.clone(),
             order_id: trade.order_id.clone(),
             timestamp: trade.timestamp,
+            order_side: "".to_string(),
+            base_asset: "".to_string(),
+            quote_asset: "".to_string(),
         })
         .collect();
 
@@ -159,7 +187,11 @@ pub async fn get_tickers_from_db(pool: &Pool<Postgres>) -> Result<Vec<TickerData
                 MIN(price) AS low,
                 MIN(price) FILTER (WHERE row_num_desc = 1) AS last_price,
                 MAX(price) FILTER (WHERE row_num_desc = 1) - MIN(price) FILTER (WHERE row_num_asc = 1) AS price_change,
-                (MAX(price) FILTER (WHERE row_num_desc = 1) - MIN(price) FILTER (WHERE row_num_asc = 1)) / MIN(price) FILTER (WHERE row_num_asc = 1) AS price_change_percent,
+                CASE
+                    WHEN MIN(price) FILTER (WHERE row_num_asc = 1) > 0
+                    THEN (MAX(price) FILTER (WHERE row_num_desc = 1) - MIN(price) FILTER (WHERE row_num_asc = 1)) / MIN(price) FILTER (WHERE row_num_asc = 1)
+                    ELSE 0
+                END AS price_change_percent,
                 SUM(quantity) AS volume,
                 SUM(price * quantity) AS quote_volume,
                 COUNT(trade_id) AS trades
@@ -176,16 +208,16 @@ pub async fn get_tickers_from_db(pool: &Pool<Postgres>) -> Result<Vec<TickerData
             ) trade_data
             GROUP BY market
         )
-        SELECT 
-            symbol, 
-            first_price, 
-            high, 
-            low, 
-            last_price, 
-            price_change, 
-            price_change_percent, 
-            quote_volume, 
-            trades, 
+        SELECT
+            symbol,
+            first_price,
+            high,
+            low,
+            last_price,
+            price_change,
+            price_change_percent,
+            quote_volume,
+            trades,
             volume
         FROM aggregated_trades
         ORDER BY symbol ASC;
@@ -195,7 +227,7 @@ pub async fn get_tickers_from_db(pool: &Pool<Postgres>) -> Result<Vec<TickerData
     .fetch_all(pool)
     .await?;
 
-    let ticker_data: Vec<TickerData> = tickers
+    let mut ticker_data: Vec<TickerData> = tickers
         .iter()
         .map(|row| TickerData {
             symbol: row.symbol.clone().to_string(),
@@ -210,6 +242,31 @@ pub async fn get_tickers_from_db(pool: &Pool<Postgres>) -> Result<Vec<TickerData
             volume: row.volume.clone().unwrap().to_string(),
         })
         .collect();
+
+    // If no tickers from trades, return default configured markets
+    if ticker_data.is_empty() {
+        let configured_markets = vec![
+            "SOL_USDC",
+            "BTC_USDC",
+            "ETH_USDC",
+            "SOL_USDT"
+        ];
+
+        for market in configured_markets {
+            ticker_data.push(TickerData {
+                symbol: market.to_string(),
+                first_price: "100.00".to_string(),
+                high: "100.00".to_string(),
+                low: "100.00".to_string(),
+                last_price: "100.00".to_string(),
+                price_change: "0.00".to_string(),
+                price_change_percent: "0.00".to_string(),
+                quote_volume: "0.00".to_string(),
+                trades: "0".to_string(),
+                volume: "0.00".to_string(),
+            });
+        }
+    }
 
     Ok(ticker_data)
 }
@@ -231,4 +288,34 @@ pub async fn get_latest_trade_id_from_db(
     };
 
     Ok(trade_id)
+}
+
+pub async fn get_orders_from_db(
+    pool: &Pool<Postgres>,
+    market: String,
+) -> Result<Vec<DbOrder>, sqlx::Error> {
+    let orders = sqlx::query!(
+        "SELECT * FROM orders WHERE market = $1 AND order_status IN ('Pending', 'PartiallyFilled') ORDER BY timestamp asc",
+        market
+    )
+    .fetch_all(pool)
+    .await?;
+
+    let orders_vec: Vec<DbOrder> = orders
+        .iter()
+        .map(|order| DbOrder {
+            order_id: order.order_id.clone(),
+            market: order.market.clone(),
+            price: order.price.to_string().parse::<Decimal>().unwrap(),
+            quantity: order.quantity.to_string().parse::<Decimal>().unwrap(),
+            filled_quantity: order.filled_quantity.to_string().parse::<Decimal>().unwrap(),
+            user_id: order.user_id.clone(),
+            side: order.side.clone(),
+            order_type: order.order_type.clone(),
+            order_status: order.order_status.clone(),
+            timestamp: order.timestamp,
+        })
+        .collect();
+
+    Ok(orders_vec)
 }

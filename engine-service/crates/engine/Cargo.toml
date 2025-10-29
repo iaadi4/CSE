@@ -6,7 +6,9 @@ edition = "2021"
 [dependencies]
 async-trait.workspace = true
 chrono.workspace = true
+dotenvy.workspace = true
 fred.workspace = true
+reqwest.workspace = true
 rust_decimal.workspace = true
 rust_decimal_macros.workspace = true
 serde.workspace = true

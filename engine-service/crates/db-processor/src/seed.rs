@@ -60,6 +60,9 @@ pub async fn generate_random_trades(pool: &PgPool, num_trades: i32) -> Result<()
             other_user_id,
             order_id,
             timestamp,
+            order_side: "BUY".to_string(), // Default for seed data
+            base_asset: "BTC".to_string(), // Default for seed data
+            quote_asset: "USDC".to_string(), // Default for seed data
         };
 
         // Insert the trade into the database

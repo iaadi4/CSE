@@ -1,5 +1,6 @@
 use actix_web::web::{Data, Json};
 
+use chrono;
 use serde_json::to_string;
 use std::time::Instant;
 use uuid::Uuid;
@@ -150,6 +151,7 @@ pub async fn get_open_orders(
 ) -> actix_web::HttpResponse {
     let starttime = Instant::now();
     let mut order = body.into_inner();
+    let market = order.market.clone(); // Store market for later use
     let pubsub_id = Some(Uuid::new_v4());
     order.pubsub_id = pubsub_id;
 
@@ -169,8 +171,31 @@ pub async fn get_open_orders(
 
         match result {
             Ok(published_data) => {
-                let published_data_json: serde_json::Value =
+                let mut published_data_json: serde_json::Value =
                     serde_json::from_str(&published_data).unwrap();
+
+                // Add market field to each order in the response
+                if let Some(orders_array) = published_data_json.as_array_mut() {
+                    for order in orders_array.iter_mut() {
+                        if let Some(order_obj) = order.as_object_mut() {
+                            order_obj.insert("market".to_string(), serde_json::Value::String(market.clone()));
+                            // Convert timestamp to created_at string
+                            if let Some(timestamp) = order_obj.get("timestamp") {
+                                if let Some(ts) = timestamp.as_i64() {
+                                    // Convert milliseconds to ISO string
+                                    let dt = chrono::DateTime::from_timestamp_millis(ts);
+                                    if let Some(dt) = dt {
+                                        order_obj.insert("created_at".to_string(), serde_json::Value::String(dt.to_rfc3339()));
+                                    }
+                                }
+                            }
+                            // Convert order_status to status
+                            if let Some(order_status) = order_obj.get("order_status") {
+                                order_obj.insert("status".to_string(), order_status.clone());
+                            }
+                        }
+                    }
+                }
 
                 println!("Time: {:?}", starttime.elapsed());
                 return actix_web::HttpResponse::Ok().json(published_data_json);

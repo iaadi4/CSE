@@ -2,7 +2,7 @@ import axios from "axios";
 import { Depth, KLine, Ticker, Trade } from "./types";
 
 // Update this to your engine-service URL
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1";
+const BASE_URL = process.env.NEXT_PUBLIC_MARKET_API_URL || "http://localhost:8081/api/v1";
 
 export async function getTicker(market: string): Promise<Ticker> {
   const tickers = await getTickers();

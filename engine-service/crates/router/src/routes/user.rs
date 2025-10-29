@@ -1,4 +1,5 @@
-use actix_web::web::Data;
+use actix_web::web::{Data, Json};
+use serde::{Deserialize, Serialize};
 use serde_json::to_string;
 use std::time::Instant;
 use uuid::Uuid;
@@ -10,14 +11,22 @@ use crate::types::{
 
 use redis::RedisQueues;
 
-pub async fn create_user(app_state: Data<AppState>) -> actix_web::HttpResponse {
+#[derive(Debug, Deserialize, Serialize)]
+pub struct CreateUserRequest {
+    pub user_id: String,
+}
+
+pub async fn create_user(
+    body: Json<CreateUserRequest>,
+    app_state: Data<AppState>,
+) -> actix_web::HttpResponse {
     let starttime = Instant::now();
 
-    let user_id = Uuid::new_v4(); // ideally this would be fetched from cookies or JWT
+    let user_id = body.user_id.clone();
 
     let pubsub_id = Some(Uuid::new_v4());
     let create_user_input = CreateUserInput {
-        user_id: user_id.to_string(),
+        user_id: user_id.clone(),
         pubsub_id,
     };
 

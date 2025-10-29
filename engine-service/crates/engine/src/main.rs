@@ -2,6 +2,7 @@ pub mod engine;
 pub mod order;
 pub mod types;
 pub mod user;
+pub mod user_service;
 
 use engine::engine::Engine;
 use order::handle_order;
@@ -14,6 +15,9 @@ use user::handle_user;
 
 #[tokio::main]
 async fn main() {
+    // Load environment variables from .env file
+    dotenvy::dotenv().ok();
+
     let redis_connection = Arc::new(RedisManager::new().await.unwrap());
     println!("Redis connected!");
 
@@ -24,7 +28,7 @@ async fn main() {
     // Use Arc and Mutex to safely share engine across tasks
     let engine = Arc::new(Mutex::new(Engine::new()));
     engine.lock().await.init_engine(&pg_pool).await;
-    engine.lock().await.init_user_balance("test_user");
+    println!("Engine initialized with multiple markets!");
 
     // Spawn a task to handle orders concurrently
     let redis_connection_orders = Arc::clone(&redis_connection); // Arc clone to share the same connection

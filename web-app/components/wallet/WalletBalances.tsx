@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { LuBitcoin } from "react-icons/lu";
 import { FaEthereum } from "react-icons/fa";
 import { SiSolana, SiBnbchain } from "react-icons/si";
+import { BalanceApi, Balance } from "@/lib/api";
 
 interface WalletBalance {
   symbol: string;
@@ -11,53 +13,107 @@ interface WalletBalance {
   usdValue: number;
   change: string;
   icon: React.ReactNode;
+  available: number;
+  locked: number;
 }
 
-const WALLET_BALANCES: WalletBalance[] = [
-  {
-    symbol: "USDT",
-    name: "Tether",
-    balance: 12456.87,
-    usdValue: 12456.87,
-    change: "+0.01%",
-    icon: <img src="/images/icons/tether.png" alt="USDT" className="w-full h-full" />,
-  },
-  {
-    symbol: "USDC",
-    name: "USD Coin",
-    balance: 5000.00,
-    usdValue: 5000.00,
-    change: "+0.00%",
-    icon: <img src="/images/icons/usdc.png" alt="USDC" className="w-full h-full" />,
-  },
-  {
-    symbol: "ETH",
-    name: "Ethereum",
-    balance: 2.3,
-    usdValue: 5234.56,
-    change: "+0.03%",
-    icon: <FaEthereum />,
-  },
-  {
-    symbol: "SOL",
-    name: "Solana",
-    balance: 45.2,
-    usdValue: 2034.12,
-    change: "+0.02%",
-    icon: <SiSolana />,
-  },
-  {
-    symbol: "BTC",
-    name: "Bitcoin",
-    balance: 0.15,
-    usdValue: 7204.85,
-    change: "+0.10%",
-    icon: <LuBitcoin />,
-  },
-];
+// Currency icons mapping
+const CURRENCY_ICONS: Record<string, React.ReactNode> = {
+  USDC: <img src="/images/icons/usdc.png" alt="USDC" className="w-full h-full" />,
+  USDT: <img src="/images/icons/tether.png" alt="USDT" className="w-full h-full" />,
+  ETH: <FaEthereum />,
+  SOL: <SiSolana />,
+  BTC: <LuBitcoin />,
+  BNB: <SiBnbchain />,
+};
+
+// Currency names mapping
+const CURRENCY_NAMES: Record<string, string> = {
+  USDC: "USD Coin",
+  USDT: "Tether",
+  ETH: "Ethereum",
+  SOL: "Solana",
+  BTC: "Bitcoin",
+  BNB: "BNB",
+};
 
 export default function WalletBalances() {
-  const totalBalance = WALLET_BALANCES.reduce((sum, item) => sum + item.usdValue, 0);
+  const [balances, setBalances] = useState<WalletBalance[]>([]);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBalances = async () => {
+      try {
+        setLoading(true);
+        const response = await BalanceApi.getBalances();
+
+        if (response.data.ok) {
+          const balanceData = response.data.data.balances;
+          const walletBalances: WalletBalance[] = [];
+
+          // Convert API response to WalletBalance format
+          Object.entries(balanceData).forEach(([currency, balance]) => {
+            const available = balance.available;
+            const locked = balance.locked;
+            const total = available + locked;
+
+            walletBalances.push({
+              symbol: currency,
+              name: CURRENCY_NAMES[currency] || currency,
+              balance: total,
+              usdValue: total, // For now, assume 1:1 with USD for stablecoins
+              change: "+0.00%", // Placeholder
+              icon: CURRENCY_ICONS[currency] || <div className="w-full h-full bg-zinc-600 rounded-full" />,
+              available,
+              locked,
+            });
+          });
+
+          setBalances(walletBalances);
+          setTotalBalance(walletBalances.reduce((sum, item) => sum + item.usdValue, 0));
+        } else {
+          setError(response.data.message);
+        }
+      } catch (err) {
+        console.error("Failed to fetch balances:", err);
+        setError("Failed to load balances");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBalances();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="h-full flex flex-col p-6">
+        <div className="mb-6">
+          <h2 className="text-zinc-400 text-base font-cabinet-medium mb-2">Total Balance</h2>
+          <div className="text-white text-4xl font-cabinet-bold">Loading...</div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-zinc-400">Loading balances...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="h-full flex flex-col p-6">
+        <div className="mb-6">
+          <h2 className="text-zinc-400 text-base font-cabinet-medium mb-2">Total Balance</h2>
+          <div className="text-white text-4xl font-cabinet-bold">$0.00</div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-red-400">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col p-6">
@@ -71,7 +127,7 @@ export default function WalletBalances() {
 
       {/* Balances List */}
       <div className="flex-1 overflow-y-auto space-y-3">
-        {WALLET_BALANCES.map((asset, index) => (
+        {balances.map((asset, index) => (
           <div
             key={index}
             className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 hover:bg-zinc-900/70 transition-colors"
@@ -101,6 +157,11 @@ export default function WalletBalances() {
                 <div className="text-zinc-400 text-sm font-cabinet-regular">
                   ${asset.usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </div>
+                {asset.locked > 0 && (
+                  <div className="text-zinc-500 text-xs font-cabinet-regular">
+                    Locked: {asset.locked.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 8 })}
+                  </div>
+                )}
               </div>
 
               <div className="text-brand-green text-sm font-cabinet-medium">

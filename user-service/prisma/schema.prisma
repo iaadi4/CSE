@@ -17,6 +17,7 @@ enum UserRole {
 // only USDC for now, can expand later
 enum Currency {
   USDC
+  SOL
 }
 
 enum Chain {

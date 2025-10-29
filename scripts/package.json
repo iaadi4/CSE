@@ -1,0 +1,12 @@
+{
+  "name": "trading-scripts",
+  "version": "1.0.0",
+  "description": "Trading simulation scripts for CSE Exchange",
+  "scripts": {
+    "simulate": "node simulate-trading.js",
+    "simulate-realistic": "node simulate-realistic-trading.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

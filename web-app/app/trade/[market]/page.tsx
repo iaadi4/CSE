@@ -8,6 +8,7 @@ import { Depth } from "@/components/trade/Depth";
 import { TradeList } from "@/components/trade/TradeList";
 import { OrderForm } from "@/components/trade/OrderForm";
 import { OpenOrders } from "@/components/trade/OpenOrders";
+import { OrderHistory } from "@/components/trade/OrderHistory";
 
 export default function TradePage() {
   const params = useParams();
@@ -58,9 +59,7 @@ export default function TradePage() {
               {/* Tab Content */}
               <div className="flex-1 overflow-auto p-4">
                 {activeTab === "orders" && <OpenOrders market={market} />}
-                {activeTab === "order-history" && (
-                  <div className="text-zinc-400 text-sm">Order History content coming soon...</div>
-                )}
+                {activeTab === "order-history" && <OrderHistory market={market} />}
               </div>
             </div>
           </div>
