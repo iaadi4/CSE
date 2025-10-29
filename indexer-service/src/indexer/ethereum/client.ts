@@ -1,5 +1,7 @@
 import { ethers } from 'ethers';
 import { config } from '../../config';
+import { saveTransaction } from '../../db';
+import { Chain, TransactionStatus, TransactionType } from '../../enums/index.enum';
 
 export class EthereumIndexer {
   private provider: ethers.WebSocketProvider;
@@ -28,7 +30,17 @@ export class EthereumIndexer {
                 - Hash: ${tx.hash}
                 ----------------------------------------------------
               `);
-            //   await dbService.saveTransaction(tx);
+              await saveTransaction({
+                to: tx.to,
+                from: tx.from,
+                amount: ethers.formatEther(tx.value),
+                hash: tx.hash,
+                blockNumber: block.number,
+                chain: Chain.ethereum,
+                status: TransactionStatus.pending,
+                transactionType: TransactionType.deposit,
+                confiramations: 0,
+              })
             }
           }
         }

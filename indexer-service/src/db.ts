@@ -1,4 +1,4 @@
-import { PrismaClient } from "./generated/prisma/client";
+import { Chain, TransactionStatus, PrismaClient } from "./generated/prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -35,6 +35,59 @@ const saveTransaction = async (data: any) => {
     console.error("Error saving transaction:", error);
     throw error;
   }
+};  
+
+const getEthereumPendingTransactions = async () => {
+  try {
+    const transactions = await prisma.transactions.findMany({
+      where: {
+        status: TransactionStatus.pending,
+        chain: Chain.ethereum,
+      },
+    });
+    return transactions;
+  } catch (error) {
+    console.error("Error fetching pending Ethereum transactions:", error);
+    throw error;
+  }
 };
 
-export { getDepositWallets, saveTransaction };
+const updateTransactionConfirmations = async (transactionId: string, confirmations: number) => {
+  try {
+    await prisma.transactions.update({
+      where: {
+        id: transactionId
+      },
+      data: {
+        confirmations
+      },
+    });
+  } catch (error) {
+    console.error(`Error updating confirmations for transaction ID ${transactionId}:`, error);
+    throw error;
+  }
+}
+
+const confirmTransaction = async (transactionId: string, status: TransactionStatus) => {
+  try {
+    await prisma.transactions.update({
+      where: {
+        id: transactionId
+      },
+      data: {
+        status: status
+      },
+    });
+  } catch (error) {
+    console.error(`Error confirming transaction ID ${transactionId}:`, error);
+    throw error;
+  }
+}
+
+export {
+  getDepositWallets,
+  saveTransaction,
+  getEthereumPendingTransactions,
+  updateTransactionConfirmations,
+  confirmTransaction
+};
