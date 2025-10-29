@@ -3,7 +3,8 @@ import yaml from "yaml";
 import path from "path";
 
 export interface Config {
-  master_seed: string;
+  master_seed: string,
+  database_url: string
 }
 
 function loadConfig() {

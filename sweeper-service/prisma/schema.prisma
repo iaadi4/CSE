@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model blockchain_events {
+  id              String   @id
+  chain           Chain
+  blockchain_hash String   @unique
+  block_slot      BigInt?
+  event_type      String
+  raw_data        Json?
+  processed       Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  @@index([blockchain_hash])
+  @@index([chain])
+}
+
+model creator_applications {
+  id                         String    @id
+  state                      String    @default("pending_submission")
+  rejection_reason           String?
+  submitted_at               DateTime  @default(now())
+  reviewed_at                DateTime?
+  approved_at                DateTime?
+  content_ownership_declared Boolean   @default(false)
+  user_id                    Int
+  users                      users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([state])
+  @@index([user_id])
+}
+
+model creator_documents {
+  id         String   @id
+  type       String
+  file_url   String
+  status     String   @default("pending")
+  notes      String?
+  created_at DateTime @default(now())
+  updated_at DateTime
+  user_id    Int
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([user_id])
+}
+
+model creator_profiles {
+  id                 String   @id
+  bio                String
+  category           String
+  status             String   @default("inactive")
+  created_at         DateTime @default(now())
+  updated_at         DateTime
+  creator_handle     String   @unique
+  custom_category    String?
+  engagement_metrics String?
+  full_name          String
+  funding_goal       Decimal? @db.Decimal(18, 2)
+  ico_supply         Decimal  @db.Decimal(18, 2)
+  phone_number       String?
+  profile_picture    String?
+  token_name         String
+  token_pitch        String
+  token_symbol       String   @unique
+  user_id            Int      @unique
+  users              users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([creator_handle])
+  @@index([token_symbol])
+  @@index([user_id])
+}
+
+model creator_social_links {
+  id             String   @id
+  platform       String
+  handle         String
+  url            String
+  verified       Boolean  @default(false)
+  created_at     DateTime @default(now())
+  follower_count Int?
+  user_id        Int
+  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model deposit_addresses {
+  id           String         @id
+  user_id      Int
+  chain        Chain
+  currency     Currency
+  address      String?        @unique
+  is_active    Boolean        @default(true)
+  created_at   DateTime       @default(now())
+  users        users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transactions transactions[]
+
+  @@unique([user_id, chain, currency])
+  @@index([chain])
+  @@index([user_id])
+}
+
+model transactions {
+  id                 String             @id
+  wallet_id          String?
+  amount             Decimal            @db.Decimal(18, 9)
+  created_at         DateTime           @default(now())
+  blockchain_hash    String?
+  confirmations      Int?
+  deposit_address_id String?
+  status             TransactionStatus  @default(pending)
+  updated_at         DateTime
+  user_id            Int
+  type               TransactionType
+  currency           Currency
+  deposit_addresses  deposit_addresses? @relation(fields: [deposit_address_id], references: [id])
+  users              users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_wallets       user_wallets?      @relation(fields: [wallet_id], references: [id])
+
+  @@index([deposit_address_id])
+  @@index([user_id])
+  @@index([wallet_id])
+}
+
+model user_balances {
+  id             String   @id
+  balance        Decimal  @default(0) @db.Decimal(18, 9)
+  locked_balance Decimal  @default(0) @db.Decimal(18, 9)
+  updated_at     DateTime
+  user_id        Int
+  currency       Currency
+  users          users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, currency])
+  @@index([user_id])
+}
+
+model user_wallets {
+  id             String         @id
+  wallet_address String         @unique
+  is_active      Boolean        @default(true)
+  created_at     DateTime       @default(now())
+  user_id        Int
+  transactions   transactions[]
+  users          users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model users {
+  email                String                 @unique
+  password_hash        String
+  created_at           DateTime               @default(now())
+  username             String                 @unique
+  uuid                 String
+  id                   Int                    @id @unique @default(autoincrement())
+  role                 UserRole               @default(investor)
+  refresh_token        String?
+  updated_at           DateTime
+  creator_applications creator_applications[]
+  creator_documents    creator_documents[]
+  creator_profiles     creator_profiles?
+  creator_social_links creator_social_links[]
+  deposit_addresses    deposit_addresses[]
+  transactions         transactions[]
+  user_balances        user_balances[]
+  user_wallets         user_wallets[]
+  verification_logs    verification_logs[]
+}
+
+model verification_logs {
+  id         String   @id
+  action     String
+  actor      String
+  metadata   Json?
+  created_at DateTime @default(now())
+  user_id    Int
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([created_at])
+  @@index([user_id])
+}
+
+enum Chain {
+  solana
+  ethereum
+  polygon
+}
+
+enum Currency {
+  USDC
+}
+
+enum TransactionStatus {
+  pending
+  confirmed
+  failed
+}
+
+enum TransactionType {
+  deposit
+  withdrawal
+  transfer
+}
+
+enum UserRole {
+  investor
+  creator
+  admin
+}

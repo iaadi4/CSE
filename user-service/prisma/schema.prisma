@@ -8,16 +8,207 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model users {
+  email                String                 @unique
+  password_hash        String
+  created_at           DateTime               @default(now())
+  username             String                 @unique
+  uuid                 String                 @default(uuid())
+  id                   Int                    @id @unique @default(autoincrement())
+  role                 UserRole               @default(investor)
+  refresh_token        String?
+  updated_at           DateTime               @updatedAt
+  creator_applications creator_applications[]
+  creator_documents    creator_documents[]
+  creator_profile      creator_profiles?
+  creator_social_links creator_social_links[]
+  deposit_addresses    deposit_addresses[]
+  transactions         transactions[]
+  user_balances        user_balances[]
+  user_wallets         user_wallets[]
+  verification_logs    verification_logs[]
+
+  @@map("users")
+}
+
+model user_wallets {
+  id             String         @id @default(uuid())
+  wallet_address String         @unique
+  is_active      Boolean        @default(true)
+  created_at     DateTime       @default(now())
+  user_id        Int
+  transactions   transactions[]
+  user           users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("user_wallets")
+}
+
+model user_balances {
+  id             String   @id @default(uuid())
+  balance        Decimal  @default(0) @db.Decimal(18, 9)
+  locked_balance Decimal  @default(0) @db.Decimal(18, 9)
+  updated_at     DateTime @updatedAt
+  user_id        Int
+  currency       Currency
+  user           users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, currency])
+  @@index([user_id])
+  @@map("user_balances")
+}
+
+model deposit_addresses {
+  id           String         @id @default(uuid())
+  user_id      Int
+  chain        Chain
+  currency     Currency
+  address      String?        @unique
+  is_active    Boolean        @default(true)
+  created_at   DateTime       @default(now())
+  user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  transactions transactions[]
+
+  @@unique([user_id, chain, currency])
+  @@index([user_id])
+  @@index([chain])
+  @@map("deposit_addresses")
+}
+
+model transactions {
+  id                 String             @id @default(uuid())
+  wallet_id          String?
+  amount             Decimal            @db.Decimal(18, 9)
+  created_at         DateTime           @default(now())
+  blockchain_hash    String?            @map("blockchain_hash")
+  confirmations      Int?
+  deposit_address_id String?
+  status             TransactionStatus  @default(pending)
+  updated_at         DateTime           @updatedAt
+  user_id            Int
+  type               TransactionType
+  currency           Currency
+  deposit_address    deposit_addresses? @relation(fields: [deposit_address_id], references: [id])
+  user               users              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  wallet             user_wallets?      @relation(fields: [wallet_id], references: [id])
+
+  @@index([user_id])
+  @@index([wallet_id])
+  @@index([deposit_address_id])
+  @@map("transactions")
+}
+
+model blockchain_events {
+  id              String   @id @default(uuid())
+  chain           Chain
+  blockchain_hash String   @unique @map("blockchain_hash")
+  block_slot      BigInt?
+  event_type      String
+  raw_data        Json?
+  processed       Boolean  @default(false)
+  created_at      DateTime @default(now())
+
+  @@index([chain])
+  @@index([blockchain_hash])
+  @@map("blockchain_events")
+}
+
+model creator_profiles {
+  id                 String   @id @default(uuid())
+  bio                String
+  category           String
+  status             String   @default("inactive")
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+  creator_handle     String   @unique
+  custom_category    String?
+  engagement_metrics String?
+  full_name          String
+  funding_goal       Decimal? @db.Decimal(18, 2)
+  ico_supply         Decimal  @db.Decimal(18, 2)
+  phone_number       String?
+  profile_picture    String?
+  token_name         String
+  token_pitch        String
+  token_symbol       String   @unique
+  user_id            Int      @unique
+  user               users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([creator_handle])
+  @@index([token_symbol])
+  @@map("creator_profiles")
+}
+
+model creator_applications {
+  id                         String    @id @default(uuid())
+  state                      String    @default("pending_submission")
+  rejection_reason           String?
+  submitted_at               DateTime  @default(now())
+  reviewed_at                DateTime?
+  approved_at                DateTime?
+  content_ownership_declared Boolean   @default(false)
+  user_id                    Int
+  user                       users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([state])
+  @@map("creator_applications")
+}
+
+model creator_documents {
+  id         String   @id @default(uuid())
+  type       String
+  file_url   String
+  status     String   @default("pending")
+  notes      String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_id    Int
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([status])
+  @@map("creator_documents")
+}
+
+model creator_social_links {
+  id             String   @id @default(uuid())
+  platform       String
+  handle         String
+  url            String
+  verified       Boolean  @default(false)
+  created_at     DateTime @default(now())
+  follower_count Int?
+  user_id        Int
+  user           users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@map("creator_social_links")
+}
+
+model verification_logs {
+  id         String   @id @default(uuid())
+  action     String
+  actor      String
+  metadata   Json?
+  created_at DateTime @default(now())
+  user_id    Int
+  user       users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([created_at])
+  @@map("verification_logs")
+}
+
 enum UserRole {
   investor
   creator
   admin
 }
 
-// only USDC for now, can expand later
 enum Currency {
   USDC
-  SOL
 }
 
 enum Chain {
@@ -36,226 +227,4 @@ enum TransactionStatus {
   pending
   confirmed
   failed
-}
-
-// ------------------- USERS -------------------
-
-model users {
-  id            Int      @id @unique @default(autoincrement())
-  uuid          String   @default(uuid())
-  username      String   @unique
-  email         String   @unique
-  password_hash String
-  role          UserRole @default(investor)
-  refresh_token        String?
-
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-
-  user_wallets         user_wallets[]
-  user_balances        user_balances[]
-  transactions         transactions[]
-  deposit_addresses    deposit_addresses[]
-  creator_profile      creator_profiles?
-  creator_applications creator_applications[]
-  creator_documents    creator_documents[]
-  creator_social_links creator_social_links[]
-  verification_logs    verification_logs[]
-
-  @@map("users")
-}
-
-// ------------------- USER WALLETS -------------------
-
-model user_wallets {
-  id             String   @id @default(uuid())
-  user_id        Int
-  wallet_address String   @unique
-  is_active      Boolean  @default(true)
-  created_at     DateTime @default(now())
-
-  user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  transactions transactions[]
-
-  @@index([user_id])
-  @@map("user_wallets")
-}
-
-// ------------------- USER BALANCES -------------------
-
-// Represents the user's internal, off-chain balance for each currency.
-model user_balances {
-  id             String   @id @default(uuid())
-  user_id        Int
-  currency       Currency
-  balance        Decimal  @default(0) @db.Decimal(18, 9)
-  locked_balance Decimal  @default(0) @db.Decimal(18, 9)
-  updated_at     DateTime @updatedAt
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@unique([user_id, currency])
-  @@index([user_id])
-  @@map("user_balances")
-}
-
-// ------------------- DEPOSIT ADDRESSES -------------------
-
-model deposit_addresses {
-  id         String   @id @default(uuid())
-  user_id    Int
-  chain      Chain
-  currency   Currency
-  address    String?   @unique
-  is_active  Boolean  @default(true)
-  created_at DateTime @default(now())
-
-  user         users          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  transactions transactions[]
-
-  @@unique([user_id, chain, currency])
-  @@index([user_id])
-  @@index([chain])
-  @@map("deposit_addresses")
-}
-
-// ------------------- TRANSACTIONS -------------------
-
-model transactions {
-  id                 String            @id @default(uuid())
-  // Denormalized user_id for easier querying of a user's transactions.
-  user_id            Int
-  wallet_id          String?
-  deposit_address_id String?
-  type               TransactionType
-  currency           Currency
-  amount             Decimal           @db.Decimal(18, 9)
-  blockchain_hash    String?           @map("blockchain_hash") // More generic name than tx_signature
-  status             TransactionStatus @default(pending)
-  confirmations      Int?
-  created_at         DateTime          @default(now())
-  updated_at         DateTime          @updatedAt
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  // Use SetNull to preserve transaction history if a wallet or address is deleted.
-  wallet          user_wallets?      @relation(fields: [wallet_id], references: [id], onDelete: SetNull)
-  deposit_address deposit_addresses? @relation(fields: [deposit_address_id], references: [id], onDelete: SetNull)
-
-  @@index([user_id])
-  @@index([wallet_id])
-  @@index([deposit_address_id])
-  @@map("transactions")
-}
-
-// ------------------- BLOCKCHAIN EVENTS -------------------
-
-model blockchain_events {
-  id              String   @id @default(uuid())
-  chain           Chain
-  blockchain_hash String   @unique @map("blockchain_hash")
-  block_slot      BigInt?
-  event_type      String // "deposit" | "withdrawal"
-  raw_data        Json?
-  processed       Boolean  @default(false)
-  created_at      DateTime @default(now())
-
-  @@index([chain])
-  @@index([blockchain_hash])
-  @@map("blockchain_events")
-}
-
-// ------------------- CREATOR SCHEMAS -------------------
-
-model creator_profiles {
-  id                 String   @id @default(uuid())
-  user_id            Int      @unique
-  full_name          String
-  phone_number       String?
-  creator_handle     String   @unique
-  bio                String   @db.Text
-  profile_picture    String?
-  category           String
-  custom_category    String?
-  engagement_metrics String?  @db.Text
-  token_name         String
-  token_symbol       String   @unique
-  ico_supply         Decimal  @db.Decimal(18, 2)
-  funding_goal       Decimal? @db.Decimal(18, 2)
-  token_pitch        String   @db.Text
-  status             String   @default("inactive")
-  created_at         DateTime @default(now())
-  updated_at         DateTime @updatedAt
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([creator_handle])
-  @@index([token_symbol])
-  @@map("creator_profiles")
-}
-
-model creator_applications {
-  id                         String    @id @default(uuid())
-  user_id                    Int
-  state                      String    @default("pending_submission")
-  rejection_reason           String?   @db.Text
-  content_ownership_declared Boolean   @default(false)
-  submitted_at               DateTime  @default(now())
-  reviewed_at                DateTime?
-  approved_at                DateTime?
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([state])
-  @@map("creator_applications")
-}
-
-model creator_documents {
-  id         String   @id @default(uuid())
-  user_id    Int
-  type       String
-  file_url   String
-  status     String   @default("pending")
-  notes      String?  @db.Text
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([status])
-  @@map("creator_documents")
-}
-
-model creator_social_links {
-  id             String   @id @default(uuid())
-  user_id        Int
-  platform       String
-  handle         String
-  url            String
-  follower_count Int?
-  verified       Boolean  @default(false)
-  created_at     DateTime @default(now())
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@map("creator_social_links")
-}
-
-model verification_logs {
-  id         String   @id @default(uuid())
-  user_id    Int
-  action     String
-  actor      String
-  metadata   Json?
-  created_at DateTime @default(now())
-
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-
-  @@index([user_id])
-  @@index([created_at])
-  @@map("verification_logs")
 }
