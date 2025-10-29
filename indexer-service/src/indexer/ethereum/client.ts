@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { config } from '../../config';
 import { saveTransaction } from '../../db';
 import { Chain, TransactionStatus, TransactionType } from '../../enums/index.enum';
+import { Currency } from '../../generated/prisma/enums';
 
 export class EthereumIndexer {
   private provider: ethers.WebSocketProvider;
@@ -31,16 +32,16 @@ export class EthereumIndexer {
                 ----------------------------------------------------
               `);
               await saveTransaction({
-                to: tx.to,
-                from: tx.from,
+                deposit_address: tx.to,
+                user_address: tx.from,
                 amount: ethers.formatEther(tx.value),
-                hash: tx.hash,
-                blockNumber: block.number,
+                blockchain_hash: tx.hash,
                 chain: Chain.ethereum,
-                status: TransactionStatus.pending,
+                currency: Currency.ETH,
                 transactionType: TransactionType.deposit,
-                confiramations: 0,
-              })
+                status: TransactionStatus.pending,
+                confirmations: 0,
+              });
             }
           }
         }

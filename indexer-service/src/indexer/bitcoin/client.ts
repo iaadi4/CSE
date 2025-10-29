@@ -1,5 +1,7 @@
 import BitcoinCore from "bitcoin-core";
 import { config } from "../../config";
+import { saveTransaction } from "../../db";
+import { Chain, Currency, TransactionStatus, TransactionType } from "../../generated/prisma/enums";
 
 interface BitcoinTx {
   txid: string;
@@ -63,7 +65,17 @@ export class BitcoinIndexer {
                 - Hash: ${tx.txid}
                 ----------------------------------------------------
               `);
-              // await dbService.saveTransaction( ... );
+              await saveTransaction({
+                deposit_address: output.scriptPubKey.address,
+                user_address: output.scriptPubKey.address,
+                blockchain: Chain.bitcoin,
+                currency: Currency.BTC,
+                blockchain_hash: tx.txid,
+                amount: output.value,
+                status: TransactionStatus.pending,
+                TransactionType: TransactionType.deposit,
+                confirmations: 0,
+              });
             }
           }
         }

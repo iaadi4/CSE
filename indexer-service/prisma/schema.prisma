@@ -120,7 +120,7 @@ model transactions {
   user_address      String
   status            TransactionStatus @default(pending)
   user_id           Int
-  transactionType              TransactionType
+  transactionType   TransactionType
   currency          Currency
   chain             Chain
   deposit_addresses deposit_addresses @relation(fields: [deposit_address], references: [address])
@@ -194,7 +194,7 @@ model verification_logs {
 enum Chain {
   solana
   ethereum
-  polygon
+  bitcoin
 }
 
 enum Currency {
