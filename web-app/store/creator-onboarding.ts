@@ -13,6 +13,7 @@ interface CreatorOnboardingState {
   profile_picture: string;
   category: string;
   custom_category: string;
+  wallet: string;
 
   // Step 3: Social Media
   social_links: SocialLink[];
@@ -41,6 +42,7 @@ interface CreatorOnboardingState {
     profile_picture?: string;
     category?: string;
     custom_category?: string;
+    wallet?: string;
   }) => void;
   setSocialMedia: (data: {
     social_links: SocialLink[];
@@ -60,10 +62,10 @@ interface CreatorOnboardingState {
   setCurrentStep: (step: number) => void;
   markStepCompleted: (step: number) => void;
   resetOnboarding: () => void;
-  getAllData: () => any;
+  getAllData: () => Omit<CreatorOnboardingState, 'currentStep' | 'completedSteps'>;
 }
 
-const initialState = {
+const initialState: CreatorOnboardingState = {
   full_name: "",
   phone_number: "",
   creator_handle: "",
@@ -71,6 +73,7 @@ const initialState = {
   profile_picture: "",
   category: "",
   custom_category: "",
+  wallet: "",
   social_links: [],
   engagement_metrics: "",
   token_name: "",
@@ -103,6 +106,7 @@ export const useCreatorOnboardingStore = create<CreatorOnboardingState>()(
             profile_picture: data.profile_picture ?? state.profile_picture,
             category: data.category ?? state.category,
             custom_category: data.custom_category ?? state.custom_category,
+            wallet: data.wallet ?? state.wallet,
           })),
 
         setSocialMedia: (data) =>
@@ -151,6 +155,7 @@ export const useCreatorOnboardingStore = create<CreatorOnboardingState>()(
             engagement_metrics: state.engagement_metrics || undefined,
             token_name: state.token_name,
             token_symbol: state.token_symbol,
+            wallet: state.wallet,
             ico_supply: state.ico_supply,
             funding_goal: state.funding_goal,
             token_pitch: state.token_pitch,

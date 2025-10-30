@@ -212,6 +212,12 @@ export const AdminApi = {
 
   updateApplicationState: (id: string, state: string) =>
     apiClient.patch<ApiResponse<any>>(`/api/admin/creator-applications/${id}/state`, { state }),
+
+  createCreatorToken: (creatorUserId: string, icoSupply: number) =>
+    apiClient.post<ApiResponse<any>>(`/api/admin/creator-applications/create-token`, {
+      ico_supply: icoSupply,
+      userId: creatorUserId,
+    })
 };
 
 export interface Balance {

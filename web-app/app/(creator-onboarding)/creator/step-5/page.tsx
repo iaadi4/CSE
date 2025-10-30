@@ -8,6 +8,7 @@ import { z } from "zod";
 const tokenBasicSchema = z.object({
   token_name: z.string().min(1, "Token name is required"),
   token_symbol: z.string().min(3, "Symbol must be at least 3 characters").max(10, "Symbol must be 10 characters or less").regex(/^[A-Z]+$/, "Symbol must be uppercase letters only"),
+  wallet: z.string().min(1, "Wallet address is required")
 });
 
 export default function Step5TokenBasic() {
@@ -15,6 +16,7 @@ export default function Step5TokenBasic() {
   const {
     token_name,
     token_symbol,
+    wallet,
     setTokenDetails,
     setCurrentStep,
     markStepCompleted,
@@ -23,6 +25,7 @@ export default function Step5TokenBasic() {
   const [formData, setFormData] = useState({
     token_name: token_name || "",
     token_symbol: token_symbol || "",
+    wallet: wallet || "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -126,6 +129,30 @@ export default function Step5TokenBasic() {
                 <p className="text-red-500 text-sm mt-2 ml-2">{errors.token_symbol}</p>
               )}
               <p className="text-sm text-gray-500 mt-2 ml-2">3-10 uppercase letters</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 ml-2">
+                Your Solana Wallet Address
+              </label>
+              <input
+                type="text"
+                value={formData.wallet}
+                onChange={(e) => {
+                  setFormData({ ...formData, wallet: e.target.value });
+                  setErrors({ ...errors, wallet: "" });
+                }}
+                placeholder="e.g., 5xAbc...789Xyz"
+                className={`w-full px-6 py-4 text-lg border-2 rounded-2xl outline-none transition-all ${
+                  errors.wallet
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-200 focus:border-green-500 focus:ring-4 focus:ring-green-100"
+                }`}
+              />
+              {errors.wallet && (
+                <p className="text-red-500 text-sm mt-2 ml-2">{errors.wallet}</p>
+              )}
+              <p className="text-sm text-gray-500 mt-2 ml-2">This wallet will receive the initial token supply.</p>
             </div>
 
             <div className="flex gap-4 pt-6">

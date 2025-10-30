@@ -293,8 +293,9 @@ class AdminController {
   static createCreatorToken = async (req: Request, res: Response) => {
     try {
       const adminUserId = req.userId; // Admin user ID
-      const { userId: creatorUserId } = req.params; // Creator's User ID from params
-      const { ico_supply } = req.body; // New ICO supply from body
+      const { ico_supply, userId: creatorUserId } = req.body; // New ICO supply from body
+
+      console.log(`Received request to create token for user ${creatorUserId} with supply ${ico_supply}`);
 
       if (!adminUserId) {
         return Send.unauthorized(res, null, "User not authenticated");
@@ -330,6 +331,8 @@ class AdminController {
         },
       });
 
+      console.log(`Creator profile for user ${creatorUserId}:`, creatorProfile);
+      
       // 4. Validate required data for token creation
       if (
         !creatorProfile ||
@@ -351,16 +354,7 @@ class AdminController {
       } = creatorProfile;
 
       // 5. Convert BigInt supply to number
-      let supplyAsNumber: number;
-      try {
-        if (ico_supply > BigInt(Number.MAX_SAFE_INTEGER)) {
-          throw new Error("ICO supply is too large to be processed safely.");
-        }
-        supplyAsNumber = Number(ico_supply);
-      } catch (e: any) {
-        console.error("Failed to convert BigInt supply:", e);
-        return Send.error(res, null, e.message || "Invalid ICO supply value.");
-      }
+      let supplyAsNumber = Number(ico_supply);
 
       let mintAddress: string;
       try {
@@ -390,7 +384,7 @@ class AdminController {
             user_id: Number(creatorUserId),
             name: token_name,
             symbol: token_symbol,
-            total_supply: ico_supply,
+            total_supply: supplyAsNumber,
             mintAddress: mintAddress, // new on-chain mint address
           },
         });

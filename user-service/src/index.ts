@@ -1,6 +1,7 @@
 import "dotenv/config";
 import App from "./app";
 import { prisma } from "./db";
+import bcrypt from "bcryptjs";
 
 async function bootstrap() {
 	// Try to establish a Prisma connection before starting the server

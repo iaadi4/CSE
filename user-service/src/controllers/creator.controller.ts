@@ -13,6 +13,7 @@ class CreatorController {
       // Creator Profile
       creator_handle,
       bio,
+      wallet,
       profile_picture,
       category,
       custom_category,
@@ -87,6 +88,7 @@ class CreatorController {
             phone_number,
             creator_handle,
             bio,
+            wallet,
             profile_picture,
             category,
             custom_category: category === "Other" ? custom_category : null,

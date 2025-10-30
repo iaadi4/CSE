@@ -119,7 +119,7 @@ model creator_profiles {
   bio                String
   category           String
   status             String   @default("inactive")
-  wallet             String   @unique // address used to create tokens and receive funds
+  wallet             String
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   creator_handle     String   @unique

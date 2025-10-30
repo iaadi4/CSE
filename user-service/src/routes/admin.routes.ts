@@ -13,7 +13,7 @@ class AdminRouter extends BaseRouter {
       },
       {
         method: "post",
-        path: "/creator-applications/:id/create-token",
+        path: "/creator-applications/create-token",
         middlewares: [AuthMiddleware.authenticateUser],
         handler: AdminController.createCreatorToken,
       },
