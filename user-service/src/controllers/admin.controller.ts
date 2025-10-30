@@ -1,19 +1,12 @@
 import type { Request, Response } from "express";
-import { prisma } from "../db.js";
-import Send from "../utils/response.utils.js";
+import { prisma } from "../db";
+import Send from "../utils/response.utils";
 
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-  user?: {
-    id: string;
-    role: string;
-  };
-}
 
 class AdminController {
   // Get all creator applications
   static getAllApplications = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     try {
@@ -107,7 +100,7 @@ class AdminController {
 
   // Get application by ID
   static getApplicationById = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     try {
@@ -202,7 +195,7 @@ class AdminController {
 
   // Approve application
   static approveApplication = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     try {
@@ -262,7 +255,7 @@ class AdminController {
           data: {
             user_id: currentApplication.user_id,
             action: "application_approved",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               old_state: currentApplication.state,
               new_state: "approved",
@@ -287,7 +280,7 @@ class AdminController {
 
   // Reject application
   static rejectApplication = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     try {
@@ -341,7 +334,7 @@ class AdminController {
           data: {
             user_id: currentApplication.user_id,
             action: "application_rejected",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               old_state: currentApplication.state,
               new_state: "rejected",
@@ -367,7 +360,7 @@ class AdminController {
 
   // Update application state
   static updateApplicationState = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     try {
@@ -437,7 +430,7 @@ class AdminController {
           data: {
             user_id: currentApplication.user_id,
             action: "state_changed",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               old_state: currentApplication.state,
               new_state: state,

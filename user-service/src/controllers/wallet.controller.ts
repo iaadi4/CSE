@@ -1,7 +1,7 @@
-import Send from "../utils/response.utils.js";
-import { prisma } from "../db.js";
+import Send from "../utils/response.utils";
+import { prisma } from "../db";
 import type { Request, Response } from "express";
-import { deriveBitcoinAddress, deriveEthereumAddress, deriveSolanaAddress } from "../helper/address-derivation.helper.js";
+import { deriveBitcoinAddress, deriveEthereumAddress, deriveSolanaAddress } from "../helper/address-derivation.helper";
 
 class WalletController {
   static createDepositAddress = async(req: Request, res: Response) => {

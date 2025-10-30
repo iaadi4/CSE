@@ -1,4 +1,4 @@
-import Send from "../utils/response.utils.js";
+import Send from "../utils/response.utils";
 import type { NextFunction, Request, Response } from "express";
 import { type ZodType, ZodError } from "zod";
 

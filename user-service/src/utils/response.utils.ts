@@ -1,5 +1,5 @@
 import type { Response } from "express";
-import { StatusCode } from "./statusCodes.utils.js";
+import { StatusCode } from "./statusCodes.utils";
 
 class Send {
     static success(res: Response, data: any, message = "success") {

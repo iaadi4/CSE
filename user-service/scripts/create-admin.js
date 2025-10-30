@@ -1,32 +1,24 @@
 import bcrypt from 'bcryptjs';
-import { randomUUID } from 'crypto';
+import { prisma } from "../src/db.js";
 
 async function generateAdminSQL() {
-  const username = 'admin';
-  const email = 'admin@example.com';
+  const username = 'admin1';
+  const email = 'admin1@example.com';
   const password = 'Admin@123'; // Change this to a secure password
   const role = 'admin';
   
   // Generate password hash
   const password_hash = await bcrypt.hash(password, 10);
-  const id = randomUUID();
   
-  const sql = `
-INSERT INTO users (id, username, email, password_hash, role, created_at)
-VALUES (
-  '${id}',
-  '${username}',
-  '${email}',
-  '${password_hash}',
-  '${role}',
-  NOW()
-);
-  `.trim();
-  
-  console.log('SQL Command to create admin user:');
-  console.log('=====================================');
-  console.log(sql);
-  console.log('=====================================');
+  await prisma.users.create({
+    data: {
+      username,
+      email,
+      password_hash,
+      role,
+    }
+  })
+
   console.log('\nCredentials:');
   console.log('Username:', username);
   console.log('Email:', email);

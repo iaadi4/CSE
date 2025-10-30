@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
 import * as z from "zod";
-import { prisma } from "../db.js";
+import { prisma } from "../db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import authConfig from "../config/auth.config.js";
-import type authSchema from "../validations/auth.schema.js";
-import Send from "../utils/response.utils.js";
+import authConfig from "../config/auth.config";
+import type authSchema from "../validations/auth.schema";
+import Send from "../utils/response.utils";
 
 class AuthController {
     static login = async (req: Request, res: Response) => {

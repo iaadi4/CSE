@@ -1,5 +1,5 @@
-import Send from "../utils/response.utils.js";
-import { prisma } from "../db.js";
+import Send from "../utils/response.utils";
+import { prisma } from "../db";
 import type { Request, Response } from "express";
 
 class UserController {

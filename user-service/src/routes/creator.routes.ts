@@ -1,5 +1,5 @@
-import ValidationMiddleware from "../middlewares/validation.middleware.js";
-import BaseRouter, { type RouteConfig } from "./router.js";
+import ValidationMiddleware from "../middlewares/validation.middleware";
+import BaseRouter, { type RouteConfig } from "./router";
 import {
   applyCreatorSchema,
   updateProfileSchema,

@@ -1,13 +1,13 @@
 import express, { type Express } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import authRoutes from "./routes/auth.routes.js";
-import appConfig from "./config/app.config.js";
-import userRoutes from "./routes/user.routes.js";
-import creatorRoutes from "./routes/creator.routes.js";
-import adminRoutes from "./routes/admin.routes.js";
-import walletRoutes from "./routes/wallet.routes.js";
-import balanceRoutes from "./routes/balance.routes.js";
+import authRoutes from "./routes/auth.routes";
+import appConfig from "./config/app.config";
+import userRoutes from "./routes/user.routes";
+import creatorRoutes from "./routes/creator.routes";
+import adminRoutes from "./routes/admin.routes";
+import walletRoutes from "./routes/wallet.routes";
+import balanceRoutes from "./routes/balance.routes";
 
 class App {
     private app: Express;
@@ -23,7 +23,7 @@ class App {
         this.app.use(express.json());
         this.app.use(cookieParser());
         this.app.use(cors({
-            origin: true,
+            origin: "http://localhost:3000",
             methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
             credentials: true
         }))

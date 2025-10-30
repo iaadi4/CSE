@@ -1,4 +1,4 @@
-import Send from "../utils/response.utils.js";
+import Send from "../utils/response.utils";
 import { prisma } from "../db.js";
 import type { Request, Response } from "express";
 

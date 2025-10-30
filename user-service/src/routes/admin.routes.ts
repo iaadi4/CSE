@@ -1,6 +1,6 @@
-import BaseRouter, { type RouteConfig } from "./router.js";
-import AdminController from "../controllers/admin.controller.js";
-import AuthMiddleware from "../middlewares/auth.middleware.js";
+import BaseRouter, { type RouteConfig } from "./router";
+import AdminController from "../controllers/admin.controller";
+import AuthMiddleware from "../middlewares/auth.middleware";
 
 class AdminRouter extends BaseRouter {
   protected routes(): RouteConfig[] {

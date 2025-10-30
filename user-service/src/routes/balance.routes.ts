@@ -1,7 +1,6 @@
-import AuthMiddleware from "../middlewares/auth.middleware.js";
-import BaseRouter, { type RouteConfig } from "./router.js";
-import ValidationMiddleware from "../middlewares/validation.middleware.js";
-import BalanceController from "../controllers/balance.controller.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
+import BaseRouter, { type RouteConfig } from "./router";
+import BalanceController from "../controllers/balance.controller";
 import type { Request, Response, NextFunction } from "express";
 
 // Middleware that allows either JWT or service authentication

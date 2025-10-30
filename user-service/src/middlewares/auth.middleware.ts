@@ -1,5 +1,5 @@
-import authConfig from "../config/auth.config.js";
-import Send from "../utils/response.utils.js";
+import authConfig from "../config/auth.config";
+import Send from "../utils/response.utils";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 

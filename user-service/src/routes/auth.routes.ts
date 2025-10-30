@@ -1,8 +1,8 @@
-import ValidationMiddleware from "../middlewares/validation.middleware.js";
-import BaseRouter, { type RouteConfig } from "./router.js";
-import authSchema from "../validations/auth.schema.js";
-import AuthController from "../controllers/auth.controller.js";
-import AuthMiddleware from "../middlewares/auth.middleware.js";
+import ValidationMiddleware from "../middlewares/validation.middleware";
+import BaseRouter, { type RouteConfig } from "./router";
+import authSchema from "../validations/auth.schema";
+import AuthController from "../controllers/auth.controller";
+import AuthMiddleware from "../middlewares/auth.middleware";
 
 
 class AuthRouter extends BaseRouter {

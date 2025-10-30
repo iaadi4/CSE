@@ -1,6 +1,6 @@
-import AuthMiddleware from "../middlewares/auth.middleware.js";
-import BaseRouter, { type RouteConfig } from "./router.js";
-import UserController from "../controllers/user.controller.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
+import BaseRouter, { type RouteConfig } from "./router";
+import UserController from "../controllers/user.controller";
 
 class UserRoutes extends BaseRouter {
     protected routes(): RouteConfig[] {

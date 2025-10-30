@@ -1,7 +1,6 @@
-import AuthMiddleware from "../middlewares/auth.middleware.js";
-import BaseRouter, { type RouteConfig } from "./router.js";
-import ValidationMiddleware from "../middlewares/validation.middleware.js";
-import WalletController from "../controllers/wallet.controller.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
+import BaseRouter, { type RouteConfig } from "./router";
+import WalletController from "../controllers/wallet.controller";
 
 class WalletRouter extends BaseRouter {
     protected routes(): RouteConfig[] {

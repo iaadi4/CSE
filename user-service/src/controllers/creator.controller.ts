@@ -1,14 +1,11 @@
 import type { Request, Response } from "express";
-import { prisma } from "../db.js";
-import Send from "../utils/response.utils.js";
+import { prisma } from "../db";
+import Send from "../utils/response.utils";
 
-interface AuthenticatedRequest extends Request {
-  userId?: string;
-}
 
 class CreatorController {
   // Apply as creator (create application)
-  static apply = async (req: AuthenticatedRequest, res: Response) => {
+  static apply = async (req: Request, res: Response) => {
     const {
       // Basic Information
       full_name,
@@ -143,7 +140,7 @@ class CreatorController {
           data: {
             user_id: Number(userId),
             action: "application_submitted",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               creator_handle,
               token_symbol,
@@ -169,7 +166,7 @@ class CreatorController {
   };
 
   // Get application by ID
-  static getApplication = async (req: AuthenticatedRequest, res: Response) => {
+  static getApplication = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.userId;
 
@@ -218,7 +215,7 @@ class CreatorController {
 
   // Update application state (admin only)
   static updateApplication = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     const { id } = req.params;
@@ -285,7 +282,7 @@ class CreatorController {
           data: {
             user_id: currentApplication.user_id,
             action: "state_changed",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               old_state: currentApplication.state,
               new_state: state,
@@ -305,7 +302,7 @@ class CreatorController {
   };
 
   // Update creator profile
-  static updateProfile = async (req: AuthenticatedRequest, res: Response) => {
+  static updateProfile = async (req: Request, res: Response) => {
     const {
       full_name,
       phone_number,
@@ -377,7 +374,7 @@ class CreatorController {
           data: {
             user_id: Number(userId),
             action: "profile_updated",
-            actor: userId,
+            actor: userId.toString(),
             metadata: req.body,
           },
         });
@@ -397,7 +394,7 @@ class CreatorController {
   };
 
   // Add social link
-  static addSocialLink = async (req: AuthenticatedRequest, res: Response) => {
+  static addSocialLink = async (req: Request, res: Response) => {
     const { platform, handle, url, follower_count } = req.body;
     const userId = req.userId;
 
@@ -435,7 +432,7 @@ class CreatorController {
   };
 
   // Upload document
-  static uploadDocument = async (req: AuthenticatedRequest, res: Response) => {
+  static uploadDocument = async (req: Request, res: Response) => {
     const { type, file_url, notes } = req.body;
     const userId = req.userId;
 
@@ -474,7 +471,7 @@ class CreatorController {
           data: {
             user_id: Number(userId),
             action: "document_uploaded",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               document_type: type,
             },
@@ -493,7 +490,7 @@ class CreatorController {
 
   // Update document status (admin only)
   static updateDocumentStatus = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     const { id } = req.params;
@@ -543,7 +540,7 @@ class CreatorController {
           data: {
             user_id: currentDocument.user_id,
             action: "document_status_changed",
-            actor: userId,
+            actor: userId.toString(),
             metadata: {
               document_id: id,
               old_status: currentDocument.status,
@@ -569,7 +566,7 @@ class CreatorController {
 
   // Get my application (current user)
   static getMyApplication = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response
   ) => {
     const userId = req.userId;

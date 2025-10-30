@@ -1,6 +1,6 @@
 import "dotenv/config";
-import App from "./app.js";
-import { prisma } from "./db.js";
+import App from "./app";
+import { prisma } from "./db";
 
 async function bootstrap() {
 	// Try to establish a Prisma connection before starting the server
