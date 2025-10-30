@@ -21,7 +21,6 @@ class CreatorRouter extends BaseRouter {
         path: "/apply",
         middlewares: [
           AuthMiddleware.authenticateUser,
-          ValidationMiddleware.validateBody(applyCreatorSchema.shape.body),
         ],
         handler: CreatorController.apply,
       },

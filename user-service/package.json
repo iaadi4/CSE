@@ -31,7 +31,10 @@
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
+    "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "bip32": "^5.0.0",
     "bip39": "^3.1.0",
