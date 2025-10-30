@@ -72,7 +72,8 @@ class AdminController {
           profile_picture: profile?.profile_picture || null,
           token_name: profile?.token_name || "",
           token_symbol: profile?.token_symbol || "",
-          ico_supply: profile?.ico_supply || 0,
+          // Convert BigInt to string for JSON safety
+          ico_supply: profile?.ico_supply ? profile.ico_supply.toString() : "0",
           funding_goal: profile?.funding_goal || null,
           token_pitch: profile?.token_pitch || "",
           government_id_url: "", // From creator_documents
@@ -168,7 +169,8 @@ class AdminController {
         profile_picture: profile?.profile_picture || null,
         token_name: profile?.token_name || "",
         token_symbol: profile?.token_symbol || "",
-        ico_supply: profile?.ico_supply || 0,
+        // Convert BigInt to string for JSON safety
+        ico_supply: profile?.ico_supply ? profile.ico_supply.toString() : "0",
         funding_goal: profile?.funding_goal || null,
         token_pitch: profile?.token_pitch || "",
         government_id_url: govIdDoc?.file_url || "",
@@ -193,7 +195,8 @@ class AdminController {
     }
   };
 
-  // Approve application
+  // --- UPDATED METHOD ---
+  // Approve application (NO TOKEN CREATION)
   static approveApplication = async (req: Request, res: Response) => {
     try {
       const userId = req.userId; // Admin user ID
@@ -203,6 +206,7 @@ class AdminController {
         return Send.unauthorized(res, null, "User not authenticated");
       }
 
+      // 1. Check if user is admin
       const adminUser = await prisma.users.findUnique({
         where: { id: Number(userId) },
         select: { role: true },
@@ -212,36 +216,126 @@ class AdminController {
         return Send.forbidden(res, null, "Admin access required");
       }
 
+      // 2. Get current application
       const applicationToApprove = await prisma.creator_applications.findUnique({
         where: { id },
-        include: {
-          user: {
-            select: {
-              creator_profile: {
-                select: {
-                  token_name: true,
-                  token_symbol: true,
-                  ico_supply: true,
-                  wallet: true,
-                },
-              },
-            },
-          },
-        },
       });
 
       if (!applicationToApprove) {
         return Send.notFound(res, null, "Application not found");
       }
 
-      const profile = applicationToApprove.user.creator_profile;
+      if (applicationToApprove.state === "approved") {
+         return Send.error(res, null, "Application is already approved.");
+      }
+      
+      const { user_id, state: old_state } = applicationToApprove;
+
+      // 3. --- Database Transaction ---
+      // Update application, profile, and user role.
+      const result = await prisma.$transaction(async (tx) => {
+        // a. Update application state to approved
+        const application = await tx.creator_applications.update({
+          where: { id },
+          data: {
+            state: "approved",
+            approved_at: new Date(),
+            reviewed_at: new Date(),
+            rejection_reason: null,
+          },
+        });
+
+        // b. Activate creator profile
+        await tx.creator_profiles.updateMany({
+          where: { user_id: user_id },
+          data: { status: "active" },
+        });
+
+        // c. Update user role to creator
+        await tx.users.update({
+          where: { id: user_id },
+          data: { role: "creator" },
+        });
+
+        // d. Log the approval
+        await tx.verification_logs.create({
+          data: {
+            user_id: user_id,
+            action: "application_approved",
+            actor: userId.toString(),
+            metadata: {
+              old_state: old_state,
+              new_state: "approved",
+              application_id: id,
+            },
+          },
+        });
+
+        return application;
+      });
+
+      return Send.success(
+        res,
+        result,
+        "Application approved successfully"
+      );
+    } catch (error: any) {
+      console.error("Approve application database transaction error:", error);
+      return Send.error(
+        res,
+        null,
+        "Failed to approve application in database."
+      );
+    }
+  };
+
+  // e.g., POST /admin/creator/:userId/create-token
+  static createCreatorToken = async (req: Request, res: Response) => {
+    try {
+      const adminUserId = req.userId; // Admin user ID
+      const { userId: creatorUserId } = req.params; // Creator's User ID from params
+      const { ico_supply } = req.body; // New ICO supply from body
+
+      if (!adminUserId) {
+        return Send.unauthorized(res, null, "User not authenticated");
+      }
+
+      // 1. Check if user is admin
+      const adminUser = await prisma.users.findUnique({
+        where: { id: Number(adminUserId) },
+        select: { role: true },
+      });
+
+      if (adminUser?.role !== "admin") {
+        return Send.forbidden(res, null, "Admin access required");
+      }
+
+      // 2. Check if token already exists
+      const existingToken = await prisma.creator_token.findUnique({
+        where: { user_id: Number(creatorUserId) },
+      });
+
+      if (existingToken) {
+        return Send.error(res, null, "Creator token already exists for this user.");
+      }
+
+      // 3. Get creator's profile data
+      const creatorProfile = await prisma.creator_profiles.findUnique({
+        where: { user_id: Number(creatorUserId) },
+        select: {
+          token_name: true,
+          token_symbol: true,
+          ico_supply: true,
+          wallet: true, // This is the solana_wallet_address
+        },
+      });
+
+      // 4. Validate required data for token creation
       if (
-        !profile ||
-        !profile.token_name ||
-        !profile.token_symbol ||
-        !profile.wallet ||
-        profile.ico_supply === null ||
-        profile.ico_supply === undefined
+        !creatorProfile ||
+        !creatorProfile.token_name ||
+        !creatorProfile.token_symbol ||
+        !creatorProfile.wallet
       ) {
         return Send.error(
           res,
@@ -253,11 +347,10 @@ class AdminController {
       const {
         token_name,
         token_symbol,
-        ico_supply,
         wallet: creatorWalletAddress,
-      } = profile;
-      const { user_id, state: old_state } = applicationToApprove;
+      } = creatorProfile;
 
+      // 5. Convert BigInt supply to number
       let supplyAsNumber: number;
       try {
         if (ico_supply > BigInt(Number.MAX_SAFE_INTEGER)) {
@@ -271,7 +364,7 @@ class AdminController {
 
       let mintAddress: string;
       try {
-        console.log(`Starting token creation for user ${user_id}...`);
+        console.log(`Starting token creation for user ${creatorUserId}...`);
         mintAddress = await createSolanaToken(
           {
             name: token_name,
@@ -290,66 +383,46 @@ class AdminController {
         );
       }
 
-      const result = await prisma.$transaction(async (tx) => {
-        const newToken = await tx.creator_token.create({
+      // Save the new token to our database
+      const newToken = await prisma.$transaction(async (tx) => {
+        const token = await tx.creator_token.create({
           data: {
-            user_id: user_id,
+            user_id: Number(creatorUserId),
             name: token_name,
             symbol: token_symbol,
             total_supply: ico_supply,
-            mintAddress: mintAddress,
+            mintAddress: mintAddress, // new on-chain mint address
           },
         });
 
-        const application = await tx.creator_applications.update({
-          where: { id },
-          data: {
-            state: "approved",
-            approved_at: new Date(),
-            reviewed_at: new Date(),
-            rejection_reason: null,
-          },
-        });
-
-        await tx.creator_profiles.updateMany({
-          where: { user_id: user_id },
-          data: { status: "active" },
-        });
-
-        await tx.users.update({
-          where: { id: user_id },
-          data: { role: "creator" },
-        });
-
+        // b. Log the creation
         await tx.verification_logs.create({
           data: {
-            user_id: user_id,
-            action: "application_approved_and_token_created",
-            actor: userId.toString(),
+            user_id: Number(creatorUserId),
+            action: "creator_token_created",
+            actor: adminUserId.toString(),
             metadata: {
-              old_state: old_state,
-              new_state: "approved",
-              application_id: id,
-              token_id: newToken.id,
+              token_id: token.id,
               mint_address: mintAddress,
             },
           },
         });
 
-        return application;
+        return token;
       });
 
       return Send.success(
         res,
-        result,
-        "Application approved and creator token created successfully"
+        newToken,
+        "Creator token created successfully"
       );
+
     } catch (error: any) {
-      console.error("Approve application database transaction error:", error);
+      console.error("Create creator token error:", error);
       return Send.error(
         res,
         null,
-        "Failed to approve application in database after token was created."
+        "Failed to create creator token."
       );
     }
   };
@@ -466,6 +539,12 @@ class AdminController {
       if (!currentApplication) {
         return Send.notFound(res, null, "Application not found");
       }
+      
+      // --- ADDED CHECK ---
+      // Prevent this endpoint from being used for the *first* approval.
+      if (state === "approved" && currentApplication.state !== "approved") {
+         return Send.error(res, null, "Please use the 'approveApplication' endpoint for initial approval.");
+      }
 
       // Update application in a transaction
       const result = await prisma.$transaction(async (tx) => {
@@ -474,7 +553,7 @@ class AdminController {
           where: { id },
           data: {
             state,
-            ...(state === "approved" && { approved_at: new Date() }),
+            ...(state === "approved" && { approved_at: new Date() }), // For re-approval
             ...(state === "under_review" && { reviewed_at: new Date() }),
             ...(state === "rejected" && { reviewed_at: new Date() }),
           },
@@ -482,6 +561,7 @@ class AdminController {
 
         // Handle state-specific actions
         if (state === "approved") {
+          // This logic is for re-activating a previously approved (but perhaps rejected) user
           // Activate creator profile
           await tx.creator_profiles.updateMany({
             where: { user_id: currentApplication.user_id },
@@ -531,3 +611,4 @@ class AdminController {
 }
 
 export default AdminController;
+

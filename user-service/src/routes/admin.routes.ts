@@ -12,6 +12,12 @@ class AdminRouter extends BaseRouter {
         handler: AdminController.getAllApplications,
       },
       {
+        method: "post",
+        path: "/creator-applications/:id/create-token",
+        middlewares: [AuthMiddleware.authenticateUser],
+        handler: AdminController.createCreatorToken,
+      },
+      {
         method: "get",
         path: "/creator-applications/:id",
         middlewares: [AuthMiddleware.authenticateUser],
