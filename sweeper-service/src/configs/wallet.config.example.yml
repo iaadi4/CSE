@@ -1,3 +1,8 @@
 master_seed: ""
 
 database_url: ""
+
+COLD_WALLET_SOL: ""
+
+node:
+  - rpc_url_sol: ""

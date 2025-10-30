@@ -4,7 +4,11 @@ import path from "path";
 
 export interface Config {
   master_seed: string,
-  database_url: string
+  database_url: string,
+  COLD_WALLET_SOL: string,
+  node: {
+    rpc_url_sol: string
+  }
 }
 
 function loadConfig() {
