@@ -27,6 +27,7 @@ model users {
   user_balances        user_balances[]
   user_wallets         user_wallets[]
   verification_logs    verification_logs[]
+  creator_token        creator_token?
 
   @@map("users")
 }
@@ -118,6 +119,7 @@ model creator_profiles {
   bio                String
   category           String
   status             String   @default("inactive")
+  wallet             String   @unique // address used to create tokens and receive funds
   created_at         DateTime @default(now())
   updated_at         DateTime @updatedAt
   creator_handle     String   @unique
@@ -125,7 +127,7 @@ model creator_profiles {
   engagement_metrics String?
   full_name          String
   funding_goal       Decimal? @db.Decimal(18, 2)
-  ico_supply         Decimal  @db.Decimal(18, 2)
+  ico_supply         BigInt?
   phone_number       String?
   profile_picture    String?
   token_name         String
@@ -138,6 +140,21 @@ model creator_profiles {
   @@index([creator_handle])
   @@index([token_symbol])
   @@map("creator_profiles")
+}
+
+model creator_token {
+  id           String @id @default(uuid())
+  name         String
+  symbol       String @unique
+  total_supply BigInt
+  mintAddress  String @unique
+  user         users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id      Int    @unique
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([user_id])
 }
 
 model creator_applications {
@@ -209,6 +226,9 @@ enum UserRole {
 
 enum Currency {
   USDC
+  SOL
+  ETH
+  BTC
 }
 
 enum Chain {
