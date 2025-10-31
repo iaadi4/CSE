@@ -186,6 +186,23 @@ sequenceDiagram
     🧹 Sweeper->>⛓️ Blockchain: Consolidate to Hot Wallet
     🧹 Sweeper->>💾 Database: Update Sweep Records
     end
+
+    rect rgb(239, 68, 68, 0.1)
+   note right of 👤 User: Withdrawal Flow
+   👤 User->>🌐 WebApp: Initiate Withdrawal Request
+   🌐 WebApp->>🚪 Gateway: POST /api/withdrawals
+   🚪 Gateway->>👤 UserSvc: Forward Withdrawal Request
+   👤 UserSvc->>👤 UserSvc: Validate Address & Balance
+   👤 UserSvc->>💾 Database: Lock Balance & Create Pending Record
+   👤 UserSvc->>JOB_QUEUE[Job Queue]: Enqueue Withdrawal Job
+   JOB_QUEUE->>🧹 SweeperSvc: Trigger Withdrawal Processor
+   🧹 SweeperSvc->>⛓️ Blockchain: Broadcast Tx from Hot Wallet
+   🧹 SweeperSvc->>💾 Database: Update Record with Tx Hash
+   note over ⛓️ Blockchain, 💾 Database: Monitor Tx Confirmations
+   ⛓️ Blockchain->>🧹 SweeperSvc: Transaction Confirmed
+   🧹 SweeperSvc->>💾 Database: Mark Withdrawal as 'Completed'
+   🧹 SweeperSvc-->>🌐 WebApp: Withdrawal Success (WS)
+   end
 ```
 
 ---
